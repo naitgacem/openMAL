@@ -1,7 +1,6 @@
 package com.aitgacem.openmalnet.models
 
 import com.google.gson.annotations.SerializedName
-import java.util.Date
 
 data class AnimeForListAllOfMyListStatus(
     @SerializedName("status") val status: String? = null,
@@ -15,5 +14,5 @@ data class AnimeForListAllOfMyListStatus(
     @SerializedName("rewatch_value") val rewatchValue: Int,
     @SerializedName("tags") val tags: List<String>,
     @SerializedName("comments") val comments: String?,
-    @SerializedName("updated_at") val updatedAt: Date,
+    @SerializedName("updated_at") val updatedAt: String,
 )

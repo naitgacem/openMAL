@@ -5,6 +5,7 @@ import com.aitgacem.openmalnet.models.MangaListStatus
 import com.aitgacem.openmalnet.models.User
 import com.aitgacem.openmalnet.models.UserAnimeList
 import com.aitgacem.openmalnet.models.UserMangaList
+import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -14,11 +15,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UserService {
-
-    @GET("users/@me")
-    suspend fun getUserInfo(
-        @Query("fields") fields: String? = "name",
-    ): User
 
     @FormUrlEncoded
     @PATCH("anime/{anime_id}/my_list_status")
@@ -35,8 +31,8 @@ interface UserService {
         @Field("comments") comments: String? = null,
         @Field("start_date") startDate: String? = null,
         @Field("finish_date") finishDate: String? = null,
+    ): Response<AnimeListStatus>
 
-        ): AnimeListStatus
     @FormUrlEncoded
     @PATCH("manga/{manga_id}/my_list_status")
     suspend fun updateMangaLibStatus(
@@ -54,18 +50,17 @@ interface UserService {
         @Field("start_date") startDate: String? = null,
         @Field("finish_date") finishDate: String? = null,
 
-        ): MangaListStatus?
-
+        ): Response<MangaListStatus>
 
     @DELETE("anime/{anime_id}/my_list_status")
     suspend fun deleteAnimeFromList(
         @Path("anime_id") id: Int
-    )
+    ): Response<Unit>
 
     @DELETE("manga/{manga_id}/my_list_status")
     suspend fun deleteMangaFromList(
         @Path("manga_id") id: Int
-    )
+    ): Response<Unit>
 
     @GET("users/{user_name}/animelist")
     suspend fun getUserAnimeList(
@@ -75,7 +70,8 @@ interface UserService {
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
         @Query("fields") fields: String? = "list_status,num_episodes",
-    ): UserAnimeList
+        @Query("nsfw") nsfw: Boolean = true
+    ): Response<UserAnimeList>
 
     @GET("users/{user_name}/mangalist")
     suspend fun getUserMangaList(
@@ -85,11 +81,13 @@ interface UserService {
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
         @Query("fields") fields: String? = "list_status,num_chapters",
-    ): UserMangaList
+        @Query("nsfw") nsfw: Boolean = true
+    ): Response<UserMangaList>
 
     @GET("users/{user_name}")
     suspend fun getMyUserInfo(
-        @Path("user_name") username: String = "@me",
-        @Query("fields") status: String? = null,
-    ) : User
+        @Path("user_name") username: String = "@me", // can only be "@me"
+        @Query("fields") fields: String? = null,
+
+        ): Response<User>
 }

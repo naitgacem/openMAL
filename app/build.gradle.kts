@@ -74,17 +74,22 @@ dependencies {
 
     //DI
     implementation(libs.hilt.android)
+    implementation(project(":domain"))
     ksp (libs.hilt.compiler)
 
     //TESTING
     testImplementation(libs.junit)
+    testImplementation(libs.truth)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     //IMAGE
-    implementation(libs.glide.volley.integration)
+    implementation(libs.glide)
     ksp(libs.glide.ksp)
 
     // NETWORKING
     implementation(project(":openmalnet"))
+
+    // MEMORY LEAKS DETECTION
+    debugImplementation(libs.leak.canary)
 }

@@ -2,9 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/browser_btn"
+        android:icon="@drawable/ic_public"
+        android:title="@string/open_in_browser"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/lib_btn"
         android:icon="@drawable/ic_library_add"
-        android:title="@string/library"
+        android:title="@string/add_or_remove_library"
         app:showAsAction="always" />
     <item
         android:id="@+id/share_btn"

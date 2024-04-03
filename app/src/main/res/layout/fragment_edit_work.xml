@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp">
+
+    <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.Material3.CollapsingToolbar.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:menu="@menu/edit_list_menu"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:titleCentered="true"
+            tools:title="string/page_title" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:id="@+id/title_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:id="@+id/work_image"
+                        android:layout_width="140dp"
+                        android:layout_height="200dp"
+                        tools:src="@drawable/anime_image" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/release_status"
+                        style="@style/TextAppearance.Material3.BodyLarge"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".3"
+                        android:autoSizeTextType="uniform"
+                        android:maxLines="1"
+                        android:textAlignment="viewStart"
+                        tools:text="Currently Airing" />
+
+                    <TextView
+                        android:id="@+id/anime_start_season"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Winter 2023" />
+
+                    <TextView
+                        android:id="@+id/num_releases"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="28 ep, 24 min" />
+
+                    <TextView
+                        android:id="@+id/content_type"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoSizeTextType="uniform"
+                        android:maxLines="1"
+                        tools:text="TV series" />
+
+                    <TextView
+                        android:id="@+id/ranked"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="viewStart"
+                        tools:text="Ranked     #1" />
+
+                    <TextView
+                        android:id="@+id/popularity"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="viewStart"
+                        tools:text="Popularity  #375" />
+
+                    <TextView
+                        android:id="@+id/members"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="viewStart"
+                        tools:text="Members 581449" />
+
+                    <TextView
+                        android:id="@+id/score"
+                        style="@style/TextAppearance.Material3.TitleLarge"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        tools:text="Score 9.17" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/list_status_title"
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:paddingStart="10dp"
+                tools:text="Watch status" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/list_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                app:singleSelection="true">
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/progress_title"
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:paddingStart="10dp"
+                tools:text="Episodes watched" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/minus_one"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:icon="@drawable/ic_remove" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/progress_text_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".7"
+                    app:endIconMode="clear_text">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/progress_edittext"
+                        style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="number"
+                        tools:text="  /  27" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/plus_one"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:icon="@drawable/ic_add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="32dp"
+                    android:paddingStart="10dp"
+                    android:text="@string/rating" />
+
+
+            </LinearLayout>
+
+            <include layout="@layout/rate_dialog"
+                android:id="@+id/rating"
+                />
+
+            <TextView
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:paddingStart="10dp"
+                android:text="@string/start_and_finish_dates" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:weightSum="1">
+
+                <TextView
+                    style="@style/TextAppearance.Material3.BodyLarge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/start"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/start_date"
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".6"
+                    android:background="@drawable/border"
+                    android:lines="1"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="12dp"
+                    android:textAlignment="center"
+                    app:endIconMode="clear_text"
+                    tools:text="30/03/2024" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:weightSum="1">
+
+                <TextView
+                    style="@style/TextAppearance.Material3.BodyLarge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/finish"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/finish_date"
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".6"
+                    android:background="@drawable/border"
+                    android:lines="1"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="8dp"
+                    android:textAlignment="center"
+                    app:endIconMode="clear_text"
+                    tools:text="30/03/2024" />
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:paddingStart="10dp"
+                android:text="@string/notes" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/notes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".75">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        tools:hint="Notes" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="16dp"
+                android:weightSum="1">
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/delete_from_list_btn"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:backgroundTint="?attr/colorErrorContainer"
+                    android:text="@string/delete_from_list"
+                    android:textColor="?attr/colorOnErrorContainer" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".3" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/save_btn"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/save" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

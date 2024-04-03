@@ -5,17 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.DEFAULT_ARGS_KEY
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import com.aitgacem.openmal.R
-import com.aitgacem.openmal.ui.components.AnimeSortType
-import com.aitgacem.openmal.ui.components.MangaSortType
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import openmal.domain.MediaType
+import openmal.domain.SortType
 
 
 @AndroidEntryPoint
-class ModalBottomSheet : BottomSheetDialogFragment() {
-    val viewModel: ProfileViewModel by hiltNavGraphViewModels(R.id.main_nav)
+class ModalBottomSheet() : BottomSheetDialogFragment() {
+    constructor(mediaType: MediaType) : this() {
+        this.mediaType = mediaType
+    }
+
+    private var mediaType: MediaType = MediaType.ANIME
+    val viewModel: ProfileViewModel by viewModels(ownerProducer = {requireParentFragment()}, extrasProducer = {
+        MutableCreationExtras(defaultViewModelCreationExtras).apply {
+            set(DEFAULT_ARGS_KEY, bundleOf("type" to mediaType))
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,25 +42,25 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val radioGroup: RadioGroup = view.findViewById(R.id.sort_options)
-        radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            when(checkedId){
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
                 R.id.filter_title -> {
-                    viewModel.changeSorting(AnimeSortType.ANIME_TITLE)
-                    viewModel.changeSorting(MangaSortType.MANGA_TITLE)
+                    viewModel.changeSorting(SortType.TITLE)
                 }
+
                 R.id.filter_score -> {
-                    viewModel.changeSorting(AnimeSortType.LIST_SCORE)
-                    viewModel.changeSorting(MangaSortType.LIST_SCORE)
+                    viewModel.changeSorting(SortType.SCORE)
                 }
+
                 R.id.filter_updated -> {
-                    viewModel.changeSorting(AnimeSortType.LIST_UPDATED)
-                    viewModel.changeSorting(MangaSortType.LIST_UPDATED_AT)
+                    viewModel.changeSorting(SortType.LAST_UPDATE)
                 }
+
                 R.id.filter_start -> {
-                    viewModel.changeSorting(AnimeSortType.ANIME_START_DATE)
-                    viewModel.changeSorting(MangaSortType.MANGA_START_DATE)
+                    viewModel.changeSorting(SortType.START_DATE)
                 }
             }
+            viewModel.setLoading(true)
             dismiss()
         }
     }

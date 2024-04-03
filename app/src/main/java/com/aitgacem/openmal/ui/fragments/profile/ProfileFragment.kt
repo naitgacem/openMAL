@@ -11,6 +11,7 @@ import com.aitgacem.openmal.R
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import openmal.domain.MediaType
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
@@ -20,8 +21,8 @@ class ProfileFragment : Fragment() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> ProfileAnimeFragment()
-                else -> ProfileMangaFragment()
+                0 -> ProfileFragmentContent(MediaType.ANIME)
+                else -> ProfileFragmentContent(MediaType.MANGA)
             }
         }
     }

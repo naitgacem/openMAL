@@ -5,8 +5,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.components.WatchingStatus
-import com.aitgacem.openmalnet.models.UserAllOfAnimeStatistics
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,36 +45,4 @@ fun convertDateToLong(dateString: String): Long {
         }
     }
     return MaterialDatePicker.todayInUtcMilliseconds()
-}
-
-fun generateHeader(filter: WatchingStatus?, animeStats: UserAllOfAnimeStatistics?): String {
-    val numEntries = getNumItemsByStatus(filter?.name, animeStats)
-    val numEpisodes = animeStats?.numEpisodes
-    val sb = StringBuilder()
-    if(filter == null){
-        sb.append("All anime: ")
-    } else {
-        sb.append("${filter.displayName}: ")
-    }
-    if(numEntries != null){
-        sb.append(numEntries).append(" entries")
-    }
-    if(filter == null && numEpisodes != null){
-        sb.append(", ").append(numEpisodes).append(" episodes")
-    }
-    return sb.toString()
-}
-
-private fun getNumItemsByStatus(status: String?, animeStats: UserAllOfAnimeStatistics?): Int? {
-    if(animeStats == null){
-        return null
-    }
-    return when (status) {
-        WatchingStatus.watching.name -> animeStats.numItemsWatching
-        WatchingStatus.completed.name -> animeStats.numItemsCompleted
-        WatchingStatus.on_hold.name -> animeStats.numItemsOnHold
-        WatchingStatus.dropped.name -> animeStats.numItemsDropped
-        WatchingStatus.plan_to_watch.name -> animeStats.numItemsPlanToWatch
-        else -> animeStats.numItems
-    }
 }

@@ -1,110 +1,101 @@
 package com.aitgacem.openmal.ui.fragments.profile
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.aitgacem.openmal.ui.components.AnimeSortType
-import com.aitgacem.openmal.ui.components.MangaSortType
-import com.aitgacem.openmal.ui.components.ReadingStatus
-import com.aitgacem.openmal.ui.components.WatchingStatus
-import com.aitgacem.openmal.ui.generateHeader
 import com.aitgacem.openmalnet.data.UserRepository
-import com.aitgacem.openmalnet.models.UserAllOfAnimeStatistics
-import com.aitgacem.openmalnet.models.UserAnimeListEdge
-import com.aitgacem.openmalnet.models.UserMangaListEdge
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import openmal.domain.ListStatus
+import openmal.domain.MediaType
+import openmal.domain.NetworkResult
+import openmal.domain.SortType
+import openmal.domain.User
+import openmal.domain.Work
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    val mediaType =
+        savedStateHandle.get<MediaType>("type") ?: throw IllegalStateException("Type not found")
 
-    val animeList = MutableLiveData<List<UserAnimeListEdge>>()
-    val mangaList = MutableLiveData<List<UserMangaListEdge>>()
+    private var _workList = MutableLiveData<NetworkResult<List<Work>>>()
+    val workList: LiveData<NetworkResult<List<Work>>> = _workList
 
-    private val animeStats = MutableLiveData<UserAllOfAnimeStatistics>()
+    private var _isLoading = MutableLiveData(true)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private var _animeStats = MutableLiveData<Map<ListStatus, Int>>()
+    val animeStats: LiveData<Map<ListStatus, Int>> = _animeStats
+
+
+    private var _numEpisodesTotal = MutableLiveData<Int>()
+    val numEpisodesTotal: LiveData<Int> = _numEpisodesTotal
+
+
+    val filterChipIds = mutableMapOf<Int, ListStatus>()
+    private var _filter = MutableLiveData(ListStatus.NON_EXISTENT)
+    val filter = _filter
+    private var sort = MutableLiveData(SortType.DEFAULT)
 
     init {
-        loadUserAnimeList()
-        loadUserMangaList()
-        loadUserStats()
+        refresh()
+    }
+
+
+    private fun loadUserWorkList() {
+        when (mediaType) {
+            MediaType.ANIME -> {
+                viewModelScope.launch {
+                    val userList = userRepository.getUserAnimeList(status = _filter.value!!, sort = sort.value!!)
+                    _workList.postValue(userList)
+                }
+            }
+            MediaType.MANGA -> {
+                viewModelScope.launch {
+                    val userList = userRepository.getUserMangaList(status = _filter.value!!, sort = sort.value!!)
+                    _workList.postValue(userList)
+                }
+            }
+        }
     }
 
     private fun loadUserStats() {
         viewModelScope.launch {
-            val stats = userRepository.getMyUserInfo(fields = "anime_statistics")?.animeStatistics
-            stats?.let { animeStats.postValue(it) }
+            when (val user: NetworkResult<User> = userRepository.getMyUserInfo()) {
+                is NetworkResult.Success -> {
+                    val stats = user.data.animeStats
+                    _numEpisodesTotal.postValue(user.data.numEpisodes)
+                    _animeStats.postValue(stats)
+                }
+
+                else -> {}
+            }
         }
     }
 
-    private fun loadUserAnimeList(status: String? = null, sortType: String? = null) {
-        viewModelScope.launch {
-            val userList = userRepository.getUserAnimeList(status = status, sort = sortType)
-            animeList.postValue(userList?.data ?: emptyList())
-        }
-    }
-    private fun loadUserMangaList(status: String? = null, sortType: String? = null) {
-        viewModelScope.launch {
-            val userList = userRepository.getUserMangaList(status = status, sort = sortType)
-            mangaList.postValue(userList?.data ?: emptyList())
-        }
+    fun changeFilter(status: ListStatus) {
+        _filter.value = status
+        loadUserWorkList()
     }
 
-    private var animeFilter = MutableLiveData<WatchingStatus?>(null)
-    private var mangaFilter = MutableLiveData<ReadingStatus?>(null)
 
-    fun changeFilter(status: WatchingStatus?) {
-        animeFilter.value = if (status == animeFilter.value) null else status
-        loadUserAnimeList(animeFilter.value?.name, animeSort.value?.queryParam)
+    fun changeSorting(type: SortType) {
+        sort.value = type
+        loadUserWorkList()
     }
-    fun changeFilter(status: ReadingStatus?) {
-        mangaFilter.value = if (status == mangaFilter.value) null else status
-        loadUserMangaList(mangaFilter.value?.name, mangaSort.value?.queryParam)
-    }
-
-    private var animeSort = MutableLiveData<AnimeSortType?>(null)
-    private var mangaSort = MutableLiveData<MangaSortType?>(null)
-    fun changeSorting(type: AnimeSortType?) {
-        animeSort.value = if (type == animeSort.value) null else type
-        loadUserAnimeList(animeFilter.value?.name, type?.queryParam)
-    }
-    fun changeSorting(type: MangaSortType?) {
-        mangaSort.value = if (type == mangaSort.value) null else type
-        loadUserMangaList(mangaFilter.value?.name, type?.queryParam)
-    }
-
-    private var _animeHeader = MediatorLiveData<String>().apply {
-        addSource(animeFilter){
-            value = generateHeader(it, animeStats.value)
-        }
-        addSource(animeStats){
-            value = generateHeader(animeFilter.value, it)
-        }
-    }
-    val animeHeader: LiveData<String> = _animeHeader
-
-    private var _mangaHeader = mangaFilter.map {
-        it?.displayName ?: "All Manga"
-    }
-    val mangaHeader: LiveData<String> = _mangaHeader
 
     fun refresh() {
-        viewModelScope.launch {
-            delay(2000)
-            loadUserAnimeList()
-            loadUserMangaList()
-        }
-        viewModelScope.launch {
-            delay(2000)
-            loadUserStats()
-            loadUserMangaList()
-        }
+        loadUserWorkList()
+        loadUserStats()
     }
 
+    fun setLoading(state: Boolean) {
+        _isLoading.postValue(state)
+    }
 }

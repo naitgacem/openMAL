@@ -1,7 +1,6 @@
 package com.aitgacem.openmalnet.models
 
 import com.google.gson.annotations.SerializedName
-import java.util.Date
 
 data class MangaForDetails(
     @SerializedName("id") val id: Int,
@@ -18,8 +17,8 @@ data class MangaForDetails(
     @SerializedName("num_scoring_users") val numScoringUsers: Int,
     @SerializedName("nsfw") val nsfw: String? = null,
     @SerializedName("genres") val genres: List<Genre>,
-    @SerializedName("created_at") val createdAt: Date,
-    @SerializedName("updated_at") val updatedAt: Date,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("updated_at") val updatedAt: String,
     @SerializedName("media_type") val mediaType: String,
     @SerializedName("status") val status: String,
     @SerializedName("my_list_status") val myListStatus: MangaForListAllOfMyListStatus? = null,

@@ -1,35 +1,29 @@
 package com.aitgacem.openmal.ui.fragments.search
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentSearchBinding
 import com.aitgacem.openmal.ui.components.SearchResultsAdapter
-import com.aitgacem.openmal.ui.fragments.details.AnimeDetailFragmentDirections
-import com.aitgacem.openmalnet.models.ItemForList
+import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import java.net.URI
+import openmal.domain.MediaType
+import openmal.domain.NetworkResult
+import openmal.domain.Work
 
 class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
     private val viewModel: SearchViewModel by hiltNavGraphViewModels(R.id.main_nav)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,35 +36,78 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val glide = Glide.with(this)
-        binding.searchRv.layoutManager = LinearLayoutManager(requireContext())
-        binding.searchRv.adapter = SearchResultsAdapter(glide, ::goToAnimeDetail)
-        viewModel.searchResults.observe(viewLifecycleOwner) {
-            (binding.searchRv.adapter as SearchResultsAdapter).submitList(it)
+        val rv = binding.recyclerView
+        val adapter = SearchResultsAdapter(glide, ::goToAnimeDetail, ::goToMangaDetail)
+
+        rv.layoutManager = LinearLayoutManager(requireContext())
+        rv.adapter = adapter
+        viewModel.searchResults.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is NetworkResult.Success -> adapter.submitList(result.data)
+                else -> {
+
+                }
+            }
         }
 
-        binding.searchEditText.addTextChangedListener(onTextChanged = { text, _, _, _ ->
-            viewModel.updateSearchTerm(text?.toString())
-        })
-        binding.searchNormalToolbar.setNavigationOnClickListener {
-            hideSoftKeyboard(requireActivity())
-            runBlocking { delay(500) }
+        binding.searchBar.setNavigationOnClickListener {
+            viewModel.reset()
             findNavController().popBackStack()
         }
-        binding.searchEditText.text = SpannableStringBuilder(viewModel.searchTerm.value ?: "")
-
-
-    }
-    private fun hideSoftKeyboard(activity:Activity) {
-        if (activity.currentFocus == null){
-            return
+        binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateSearchTerm(text.toString())
         }
-        val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
-    }
-    private fun goToAnimeDetail(it: ItemForList){
-        val action = AnimeDetailFragmentDirections.gotoAnimeDetail(
-            it.id, it.mainPicture?.medium ?: URI(""), it.originalTitle
+        binding.searchView.editText.setOnEditorActionListener { _, _, _ ->
+            val text = binding.searchView.text
+            binding.searchBar.setText(text)
+            binding.searchView.hide()
+            viewModel.doSearch(text.toString())
+            false
+        }
+        val suggestionsAdapter = SearchSuggestionsAdapter(Glide.with(this)){title ->
+            binding.searchBar.setText(title)
+            binding.searchView.hide()
+            viewModel.doSearch(title)
+        }
+        binding.suggestionsRv.layoutManager = LinearLayoutManager(requireContext())
+        binding.suggestionsRv.adapter = suggestionsAdapter
+        binding.suggestionsRv.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
+            )
         )
-        findNavController().navigate(action)
+        viewModel.suggestions.observe(viewLifecycleOwner) { suggestionsList ->
+            val suggestions = suggestionsList.map {
+                SearchSuggestion(
+                    it.userPreferredTitle,
+                    it.originalTitle,
+                    it.synonyms,
+                    R.drawable.ic_search
+                )
+            }
+            suggestionsAdapter.submitList(suggestions)
+        }
+    }
+
+    private fun goToAnimeDetail(transitionView: View, it: Work) {
+        val action = DetailFragmentDirections.gotoDetail(
+            it.id, it.pictureURL ?: "", it.originalTitle, MediaType.ANIME
+        )
+        findNavController().navigate(
+            action, navigatorExtras = FragmentNavigatorExtras(
+                transitionView to it.originalTitle
+            )
+        )
+    }
+    private fun goToMangaDetail(transitionView: View, it: Work) {
+        val action = DetailFragmentDirections.gotoDetail(
+            it.id,  it.pictureURL, it.originalTitle, MediaType.MANGA
+        )
+        findNavController().navigate(
+            action, navigatorExtras = FragmentNavigatorExtras(
+                transitionView to it.originalTitle
+            )
+        )
     }
 }

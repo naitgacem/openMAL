@@ -30,94 +30,64 @@
         android:label="fragment_seasonal"
         tools:layout="@layout/fragment_seasonal" />
     <fragment
-        android:id="@+id/detail_dest"
-        android:name="com.aitgacem.openmal.ui.fragments.details.AnimeDetailFragment"
-        android:label="fragment_anime_detail"
-        tools:layout="@layout/fragment_anime_detail">
+        android:id="@+id/detail_dest2"
+        android:name="com.aitgacem.openmal.ui.fragments.details.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail">
         <argument
             android:name="id"
             app:argType="integer" />
         <argument android:name="image_url"
-            app:argType="java.net.URI"
-            app:nullable="false"/>
-        <argument android:name="anime_title"
-            app:argType="string" />
-        <action
-            android:id="@+id/edit_anime_list_action"
-            app:destination="@id/edit_anime_list_dest" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/manga_detail_dest"
-        android:name="com.aitgacem.openmal.ui.fragments.details.MangaDetailFragment"
-        android:label="fragment_manga_dest"
-        tools:layout="@layout/fragment_manga_detail">
+            app:argType="string"
+            app:nullable="true"/>
+        <argument android:name="work_title"
+            app:argType="string"
+            app:nullable="true" />
         <argument
-            android:name="id"
-            app:argType="integer" />
-        <argument android:name="image_url"
-            app:argType="java.net.URI"
-            app:nullable="false"/>
-        <argument android:name="manga_title"
-            app:argType="string" />
-        <action
-            android:id="@+id/edit_manga_list_action"
-            app:destination="@id/edit_manga_list_dest" />
-
+            android:name="media_type"
+            app:argType="openmal.domain.MediaType" />
     </fragment>
 
     <action
-        android:id="@+id/goto_anime_detail"
-        app:destination="@+id/detail_dest">
+        android:id="@+id/goto_detail"
+        app:destination="@+id/detail_dest2">
     </action>
+
     <action
         android:id="@+id/goto_login_prompt"
         app:destination="@+id/login_prompt_dest">
     </action>
-    <action
-        android:id="@+id/goto_manga_detail"
-        app:destination="@+id/manga_detail_dest">
-    </action>
+
     <fragment
         android:id="@+id/search_dest"
         android:name="com.aitgacem.openmal.ui.fragments.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search"/>
     <fragment
-        android:id="@+id/edit_anime_list_dest"
-        android:name="com.aitgacem.openmal.ui.fragments.edit.EditAnimeListFragment"
-        android:label="edit_anime_list_fragment"
-        tools:layout="@layout/fragment_edit_anime_list">
-        <argument
-            android:name="image_url"
-            app:argType="string" />
-        <argument
-            android:name="info"
-            app:argType="string[]" />
-        <argument
-            android:name="id"
-            app:argType="integer" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/edit_manga_list_dest"
-        android:name="com.aitgacem.openmal.ui.fragments.edit.EditMangaListFragment"
-        android:label="edit_manga_list_fragment"
-        tools:layout="@layout/fragment_edit_anime_list">
-        <argument
-            android:name="image_url"
-            app:argType="string" />
-        <argument
-            android:name="info"
-            app:argType="string[]" />
-        <argument
-            android:name="id"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/login_prompt_dest"
         android:name="com.aitgacem.openmal.ui.fragments.login.LoginPromptFragment"
         android:label="fragment_login_prompt"
         tools:layout="@layout/fragment_login_prompt"/>
+    <fragment
+        android:id="@+id/edit_work_dest"
+        android:name="com.aitgacem.openmal.ui.fragments.edit.EditListFragment"
+        tools:layout="@layout/fragment_edit_work"
+        android:label="fragment_edit_list">
+        <argument
+            android:name="id"
+            app:argType="integer"/>
+        <argument
+            android:name="image_url"
+            app:argType="string" />
+        <argument android:name="title"
+            app:argType="string"
+            />
+        <argument android:name="media_type"
+            app:argType="openmal.domain.MediaType"/>
+
+
+    </fragment>
+    <action android:id="@+id/goto_edit_list"
+        app:destination="@id/edit_work_dest"/>
+
 </navigation>

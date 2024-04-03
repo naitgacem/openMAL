@@ -47,13 +47,20 @@ class HomeFragment : Fragment() {
         viewPager.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Anime"
-                1 -> "Manga"
+                0 -> getString(R.string.anime)
+                1 ->  getString(R.string.manga)
                 else -> throw IllegalStateException()
             }
         }.attach()
         view.findViewById<Toolbar>(R.id.toolbar).menu[1].setVisible(false)
-        view.findViewById<Toolbar>(R.id.toolbar).menu[0].setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_search, requireContext().theme))
+        view.findViewById<Toolbar>(R.id.toolbar).menu[2].setVisible(false)
+        view.findViewById<Toolbar>(R.id.toolbar).menu[0].setIcon(
+            ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.ic_search,
+                requireContext().theme
+            )
+        )
         view.findViewById<Toolbar>(R.id.toolbar).menu[0].setOnMenuItemClickListener {
             findNavController().navigate(R.id.search_dest)
             true

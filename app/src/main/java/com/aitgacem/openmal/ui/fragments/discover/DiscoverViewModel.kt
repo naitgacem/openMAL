@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aitgacem.openmalnet.data.AnimeRepository
 import com.aitgacem.openmalnet.data.MangaRepository
-import com.aitgacem.openmalnet.models.ItemForList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import openmal.domain.NetworkResult
+import openmal.domain.Work
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,46 +18,46 @@ class DiscoverViewModel @Inject constructor(
     private val mangaRepository: MangaRepository,
 ) : ViewModel() {
 
-    private var _suggestedAnime = MutableLiveData<List<ItemForList>>()
-    val suggestedAnime: LiveData<List<ItemForList>> = _suggestedAnime
+    private var _suggestedAnime = MutableLiveData<NetworkResult<List<Work>>>()
+    val suggestedAnime: LiveData<NetworkResult<List<Work>>> = _suggestedAnime
 
-    private var _topPopularAnime = MutableLiveData<List<ItemForList>>()
-    val topPopularAnime: LiveData<List<ItemForList>> = _topPopularAnime
+    private var _topPopularAnime = MutableLiveData<NetworkResult<List<Work>>>()
+    val topPopularAnime: LiveData<NetworkResult<List<Work>>> = _topPopularAnime
 
-    private var _upcomingAnime = MutableLiveData<List<ItemForList>>()
-    val upcomingAnime: LiveData<List<ItemForList>> = _upcomingAnime
+    private var _upcomingAnime = MutableLiveData<NetworkResult<List<Work>>>()
+    val upcomingAnime: LiveData<NetworkResult<List<Work>>> = _upcomingAnime
 
 
-    private var _topPopularManga = MutableLiveData<List<ItemForList>>()
-    val topPopularManga: LiveData<List<ItemForList>> = _topPopularManga
+    private var _topPopularManga = MutableLiveData<NetworkResult<List<Work>>>()
+    val topPopularManga: LiveData<NetworkResult<List<Work>>> = _topPopularManga
 
-    private var _mostFavouritedManga = MutableLiveData<List<ItemForList>>()
-    val mostFavouritedManga: LiveData<List<ItemForList>> = _mostFavouritedManga
+    private var _mostFavouritedManga = MutableLiveData<NetworkResult<List<Work>>>()
+    val mostFavouritedManga: LiveData<NetworkResult<List<Work>>> = _mostFavouritedManga
 
-    private var _topDoujin = MutableLiveData<List<ItemForList>>()
-    val topDoujin: LiveData<List<ItemForList>> = _topDoujin
+    private var _topDoujin = MutableLiveData<NetworkResult<List<Work>>>()
+    val topDoujin: LiveData<NetworkResult<List<Work>>> = _topDoujin
 
 
 
     init {
         viewModelScope.launch {
-            _suggestedAnime.postValue( animeRepository.getTopSuggestedAnime(limit = 50))
+            _suggestedAnime.postValue( animeRepository.getTopSuggestedAnime())
         }
         viewModelScope.launch {
-            _topPopularAnime.postValue(animeRepository.getTopPopularAnime(limit = 50))
+            _topPopularAnime.postValue(animeRepository.getTopPopularAnime())
         }
         viewModelScope.launch {
-            _upcomingAnime.postValue(animeRepository.getTopUpcomingAnime(limit = 50))
+            _upcomingAnime.postValue(animeRepository.getTopUpcomingAnime())
         }
 
         viewModelScope.launch {
-            _topPopularManga.postValue( mangaRepository.getTopPopularManga(limit = 50))
+            _topPopularManga.postValue( mangaRepository.getTopPopularManga())
         }
         viewModelScope.launch {
-            _mostFavouritedManga.postValue(mangaRepository.getMostFavoritedManga(limit = 50))
+            _mostFavouritedManga.postValue(mangaRepository.getMostFavoritedManga())
         }
         viewModelScope.launch {
-            _topDoujin.postValue(mangaRepository.getTopDoujin(limit = 50))
+            _topDoujin.postValue(mangaRepository.getTopDoujin())
         }
     }
 

@@ -49,8 +49,8 @@ class DiscoverFragment : Fragment() {
         viewPager.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Anime"
-                1 -> "Manga"
+                0 -> getString(R.string.anime)
+                1 ->  getString(R.string.manga)
                 else -> throw IllegalStateException()
             }
         }.attach()

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.aitgacem.openmal.ui.components.RateBar android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        style="@style/TextAppearance.Material3.BodyMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rating_text"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        android:paddingStart="10dp"
+         />
+
+    <RatingBar
+        style="@style/Widget.AppCompat.RatingBar.Indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rating_bar"
+        android:layout_marginTop="16dp"
+        android:numStars="10"
+        android:rating="0"
+        android:layout_gravity="center_horizontal"
+        android:isIndicator="false"
+        android:scaleX=".9"
+        android:scaleY=".9"
+        android:stepSize="1" />
+
+</com.aitgacem.openmal.ui.components.RateBar>

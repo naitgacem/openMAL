@@ -11,7 +11,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-
+-dontobfuscate
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
@@ -19,8 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.bumptech.glide.integration.volley.VolleyGlideModule
--keep class com.aitgacem.openmalnet.models.SeasonEnum { *; }
 
 #------------ RETROFIT ----------------------------------------------#
 # Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
@@ -70,7 +68,6 @@
 -keep,allowoptimization,allowshrinking,allowobfuscation class <3>
 
 # With R8 full mode generic signatures are stripped for classes that are not kept.
--keep,allowobfuscation,allowshrinking class retrofit2.Response
 
 # JSR 305 annotations are for embedding nullability information.
 -dontwarn javax.annotation.**
@@ -121,5 +118,6 @@
 # Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
 
 ##---------------End: proguard configuration for Gson  ----------

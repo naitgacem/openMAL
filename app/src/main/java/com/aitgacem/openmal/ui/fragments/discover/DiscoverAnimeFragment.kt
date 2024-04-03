@@ -4,21 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.aitgacem.openmal.R
-import com.aitgacem.openmal.data.model.AnimeRanking
 import com.aitgacem.openmal.databinding.FragmentLinearLayoutBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.AnimeDetailFragmentDirections
-import com.aitgacem.openmal.ui.setupSection
+import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
-import com.aitgacem.openmalnet.models.ItemForList
+import com.aitgacem.openmal.ui.setupSection
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import java.net.URI
+import openmal.domain.ApiError
+import openmal.domain.MediaType
+import openmal.domain.NetworkResult
+import openmal.domain.Work
 
 @AndroidEntryPoint
 class DiscoverAnimeFragment : Fragment() {
@@ -39,39 +41,90 @@ class DiscoverAnimeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val glide = Glide.with(this)
-        val popularAnimeAdapter = HorizontalListAdapter(glide,::goToAnimeDetail)
-        viewModel.topPopularAnime.observe(viewLifecycleOwner) {
-            popularAnimeAdapter.submitList(it)
+        val popularAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        viewModel.topPopularAnime.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is NetworkResult.Success -> popularAnimeAdapter.submitList(result.data)
+                is NetworkResult.Error -> onError(result.apiError)
+                is NetworkResult.Exception -> onException()
+            }
         }
-        val upcomingAnimeAdapter = HorizontalListAdapter(glide,::goToAnimeDetail)
-        viewModel.upcomingAnime.observe(viewLifecycleOwner) {
-            upcomingAnimeAdapter.submitList(it)
+        val upcomingAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        viewModel.upcomingAnime.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is NetworkResult.Success -> upcomingAnimeAdapter.submitList(result.data)
+                is NetworkResult.Error -> onError(result.apiError)
+                is NetworkResult.Exception -> onException()
+            }
         }
         loginViewModel.isLoggedIn.observe(viewLifecycleOwner) { isLogged ->
             if (isLogged) {
-                val suggestedAnimeAdapter = HorizontalListAdapter(glide,::goToAnimeDetail)
-                setupSection(requireContext(),binding.thirdTitle, binding.thirdRv, AnimeRanking.SUGGESTED.title, suggestedAnimeAdapter)
-                viewModel.suggestedAnime.observe(viewLifecycleOwner) {
-                    suggestedAnimeAdapter.submitList(it)
+                val suggestedAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+                setupSection(
+                    requireContext(),
+                    binding.thirdTitle,
+                    binding.thirdRv,
+                    getString(R.string.suggested_anime),
+                    suggestedAnimeAdapter
+                )
+                viewModel.suggestedAnime.observe(viewLifecycleOwner) { result ->
+                    when (result) {
+                        is NetworkResult.Success -> suggestedAnimeAdapter.submitList(result.data)
+                        is NetworkResult.Error -> onError(result.apiError)
+                        is NetworkResult.Exception -> onException()
+                    }
                 }
             } else {
-                // Empty the section
-                binding.thirdTitle.text = ""
-                binding.thirdRv.adapter = HorizontalListAdapter(glide) { _, _ -> }
+                hideSuggested()
             }
         }
-        setupSection(requireContext(),binding.firstTitle, binding.firstRv, AnimeRanking.BY_POPULARITY.title, popularAnimeAdapter)
-        setupSection(requireContext(),binding.secondTitle, binding.secondRv, AnimeRanking.UPCOMING.title, upcomingAnimeAdapter)
+        setupSection(
+            requireContext(),
+            binding.firstTitle,
+            binding.firstRv,
+            getString(R.string.top_anime_by_popularity),
+            popularAnimeAdapter
+        )
+        setupSection(
+            requireContext(),
+            binding.secondTitle,
+            binding.secondRv,
+            getString(R.string.top_upcoming_anime),
+            upcomingAnimeAdapter
+        )
     }
-    private fun goToAnimeDetail(transitionView: View, it: ItemForList) {
-        val action = AnimeDetailFragmentDirections.gotoAnimeDetail(
-            it.id, it.mainPicture?.medium ?: URI(""), it.originalTitle
+
+    private fun goToAnimeDetail(transitionView: View, it: Work) {
+        val action = DetailFragmentDirections.gotoDetail(
+            it.id, it.pictureURL ?: "", it.originalTitle, MediaType.ANIME
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to transitionView.transitionName
+                transitionView to it.originalTitle
             )
         )
     }
 
+    private fun onError(apiError: ApiError) {
+        val message = getString(
+            when (apiError) {
+                ApiError.BAD_REQUEST -> R.string.bad_request
+                ApiError.UNAUTHORIZED -> R.string.unauthorized
+                ApiError.FORBIDDEN -> R.string.forbidden
+                ApiError.NOT_FOUND -> R.string.not_found
+                ApiError.UNKNOWN -> R.string.unknown_error_occurred
+            }
+        )
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onException() {
+        Toast.makeText(requireContext(), getString(R.string.check_internet), Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    private fun hideSuggested() {
+        binding.thirdTitle.text = ""
+        binding.thirdRv.adapter = HorizontalListAdapter(Glide.with(this)) { _, _ -> }
+    }
 }

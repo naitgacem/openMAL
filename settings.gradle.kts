@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "open MAL"
 include(":app")
 include(":openmalnet")
+include(":domain")

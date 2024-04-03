@@ -2,85 +2,74 @@ package com.aitgacem.openmalnet.data
 
 
 import com.aitgacem.openmalnet.api.mal.MangaService
-import com.aitgacem.openmalnet.models.ItemForList
 import com.aitgacem.openmalnet.models.MangaForDetails
+import com.aitgacem.openmalnet.models.MangaListForRanking
+import openmal.domain.NetworkResult
+import openmal.domain.Work
 import javax.inject.Inject
 
 class MangaRepository @Inject constructor(
     private val mangaService: MangaService
 ) {
+    private val listFields = "id,title,main_picture,alternative_titles"
 
     suspend fun getTopManga(
-        limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return getTopManga(MangaRanking.MANGA, limit, offset, fields)
+    ): NetworkResult<List<Work>> {
+        return getRankingManga("manga")
     }
 
     suspend fun getTopNovels(
-        limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return getTopManga(MangaRanking.NOVELS, limit, offset, fields)
+    ): NetworkResult<List<Work>> {
+        return getRankingManga("novels")
+    }
+
+    private suspend fun getRankingManga(rankingType: String): NetworkResult<List<Work>> {
+        val result: NetworkResult<MangaListForRanking> = handleApi {
+            mangaService.getMangaRanking(
+                rankingType = rankingType, limit = 50, offset = 0, fields = listFields
+            )
+        }
+        return when (result) {
+            is NetworkResult.Error -> NetworkResult.Error(result.code, result.apiError)
+            is NetworkResult.Exception -> NetworkResult.Exception(result.e)
+            is NetworkResult.Success -> {
+                val animeList = result.data.data.map { it.node }
+                NetworkResult.Success(animeList.map { it.toListWork() })
+            }
+        }
     }
 
     suspend fun getTopOneShots(
-        limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return getTopManga(MangaRanking.ONESHOTS, limit, offset, fields)
-    }
-    suspend fun getTopPopularManga(
-        limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return getTopManga(MangaRanking.BY_POPULARITY, limit, offset, fields)
-    }
-    suspend fun getMostFavoritedManga(
-        limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return getTopManga(MangaRanking.FAVORITE, limit, offset, fields)
-    }
-    suspend fun getTopDoujin(
-        limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return getTopManga(MangaRanking.DOUJIN, limit, offset, fields)
+    ): NetworkResult<List<Work>> {
+        return getRankingManga("oneshots")
     }
 
-    private suspend fun getTopManga(
-        rankingType: MangaRanking, limit: Int? = null,
-        offset: Int? = null,
-        fields: String? = null,
-    ): List<ItemForList>? {
-        return try {
-            mangaService.getMangaRanking(
-                rankingType.queryParam, limit, offset, fields
-            ).data.map { it.node as ItemForList }
-        } catch (e: Exception){
-            e.printStackTrace()
-            print(e.message)
-            null
-        }
+    suspend fun getTopPopularManga(): NetworkResult<List<Work>> {
+        return getRankingManga("bypopularity")
+    }
+
+    suspend fun getMostFavoritedManga(): NetworkResult<List<Work>> {
+        return getRankingManga("favorite")
+    }
+
+    suspend fun getTopDoujin(): NetworkResult<List<Work>> {
+        return getRankingManga("doujin")
     }
 
     suspend fun getMangaDetails(
         id: Int,
-        fields: String? = null,
-    ): MangaForDetails? {
-        return try {
-            mangaService.getMangaDetails(id, fields)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            print(e.message)
-            null
+    ): NetworkResult<Work> {
+        val result: NetworkResult<MangaForDetails> = handleApi {
+            mangaService.getMangaDetails(
+                id = id,
+                fields = "id,title,main_picture,alternative_titles,start_date,end_date,created_at,updated_at,synopsis,mean,rank,popularity,authors,num_volumes,num_list_users,genres,media_type,status,my_list_status{updated_at,created_at,tags,comments,start_date,finish_date},num_chapters,pictures,related_anime,related_manga,recommendations,serialization"
+            )
+        }
+        return when (result) {
+            is NetworkResult.Success -> NetworkResult.Success(result.data.toDetailsWork())
+            is NetworkResult.Error -> NetworkResult.Error(result.code, result.code.toErrorEnum())
+            is NetworkResult.Exception -> NetworkResult.Exception(result.e)
         }
     }
+
 }

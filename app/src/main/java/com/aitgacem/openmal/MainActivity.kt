@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.aitgacem.openmal.data.UserPreferencesRepository
@@ -20,15 +22,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var preferencesRepository: UserPreferencesRepository
     private val viewModel by viewModels<LoginViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val fullScreenDest = setOf(
-            R.id.detail_dest,
             R.id.search_dest,
-            R.id.manga_detail_dest,
-            R.id.edit_anime_list_dest,
-            R.id.edit_manga_list_dest,
+            R.id.detail_dest2,
+            R.id.edit_work_dest,
         )
 
         val navHostFragment =

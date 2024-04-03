@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="24dp"
+    android:paddingTop="16dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="16dp">
+
+    <ImageView
+        android:id="@+id/suggestion_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_search"
+        android:layout_gravity="top" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/suggestion_text_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:textAppearance="?attr/textAppearanceBody2"
+            tools:text="Case closed" />
+
+        <TextView
+            android:id="@+id/suggestion_text_alt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceCaption"
+            app:drawableLeftCompat="@drawable/ic_japanese"
+            tools:text="Meitantei Conan" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/suggestions">
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+            <TextView
+                android:id="@+id/suggestion_text_synonyms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                app:drawableLeftCompat="@drawable/ic_info"
+                tools:text="Also known as: Detective Conan" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

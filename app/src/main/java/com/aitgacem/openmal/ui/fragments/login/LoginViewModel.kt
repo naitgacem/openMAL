@@ -5,8 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Base64
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -34,9 +32,6 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
     private var _isLoggedIn = prefs.isLoggedInFlow
     val isLoggedIn = _isLoggedIn.asLiveData()
-
-    private var _loginError = MutableLiveData(false)
-    val loginError: LiveData<Boolean> = _loginError
 
     private val codeChallenge = generateCodeVerifier()
 
@@ -66,7 +61,6 @@ class LoginViewModel @Inject constructor(
                     Runtime.getRuntime().exit(0)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    _loginError.postValue(true)
                     prefs.updateLoginStatus(false)
                 }
             }

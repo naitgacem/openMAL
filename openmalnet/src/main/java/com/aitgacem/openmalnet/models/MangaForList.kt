@@ -7,7 +7,7 @@ data class MangaForList(
     @SerializedName("id") override val id: Int,
     @SerializedName("title") val title: String,
     @SerializedName("main_picture") override val mainPicture: WorkBaseMainPicture? = null,
-    @SerializedName("alternative_titles") private val alternativeTitles: WorkForListAllOfAlternativeTitles? = null,
+    @SerializedName("alternative_titles") val alternativeTitles: WorkForListAllOfAlternativeTitles? = null,
     @SerializedName("start_date") val startDate: String? = null,
     @SerializedName("end_date") val endDate: String? = null,
     @SerializedName("synopsis") val synopsis: String? = null,
@@ -22,10 +22,10 @@ data class MangaForList(
     @SerializedName("updated_at") val updatedAt: Date,
     @SerializedName("media_type") val mediaType: String,
     @SerializedName("status") val status: String,
-    @SerializedName("my_list_status") private val myListStatus: MangaForListAllOfMyListStatus? = null,
+    @SerializedName("my_list_status") val myListStatus: MangaForListAllOfMyListStatus? = null,
     @SerializedName("num_volumes") val numVolumes: Int,
     @SerializedName("num_chapters") val numChapters: Int,
-    @SerializedName("authors") private val authors: List<PersonRoleEdge>? = null,
+    @SerializedName("authors") val authors: List<PersonRoleEdge>? = null,
     override val type: String = "Manga",
 
     ) : ItemForList {

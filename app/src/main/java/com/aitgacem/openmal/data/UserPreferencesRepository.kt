@@ -90,10 +90,6 @@ private object PreferencesKeys {
     val CODE_CHALLENGE = stringPreferencesKey("code_challenge")
 }
 
-data class UserPreferences(
-    val isLoggedIn: Boolean
-)
-
 private suspend fun FlowCollector<Preferences>.onError(
     exception: Throwable
 ) {

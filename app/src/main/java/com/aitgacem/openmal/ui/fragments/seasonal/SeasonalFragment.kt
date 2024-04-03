@@ -11,16 +11,26 @@ import com.aitgacem.openmal.R
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import openmal.domain.Season
+import java.util.Calendar
 
 @AndroidEntryPoint
 class SeasonalFragment : Fragment() {
 
-    class TabbedLayoutAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+    companion object {
+        /**
+         * The reason we have limited number of seasons is that [TabLayoutMediator] pre-populates
+         * the tabs.
+         * @see TabLayoutMediator.populateTabsFromPagerAdapter
+         */
+        const val NUMBER_SEASONS = 26
+    }
 
-        override fun getItemCount(): Int = 3
+    class TabbedLayoutAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+        override fun getItemCount(): Int = NUMBER_SEASONS
 
         override fun createFragment(position: Int): Fragment {
-            return SeasonContent(position)
+            return SeasonContent(generatePairFromIndex(position))
         }
     }
 
@@ -38,14 +48,34 @@ class SeasonalFragment : Fragment() {
 
         val adapter = TabbedLayoutAdapter(this)
         viewPager.adapter = adapter
-        viewPager.setCurrentItem(1, false)
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Last season"
-                1 -> "This season"
-                2 -> "Next season"
-                else -> throw IllegalStateException()
-            }
+            val season = generatePairFromIndex(position)
+            tab.text = "${season.first} ${season.second}"
         }.attach()
+        // Jump to the current season.
+        viewPager.setCurrentItem(NUMBER_SEASONS - 2, false)
     }
+}
+
+/**
+ * Hacky way to cycle through the seasons / years going backwards.
+ * God forgive me for what I am about to do
+ */
+fun generatePairFromIndex(index: Int): Pair<Season, Int> {
+    val calendar: Calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_MONTH, 15) // center the date
+    //compute the displacement in seasons
+    val displacement = (SeasonalFragment.NUMBER_SEASONS - 1) - index - 1
+    calendar.add(Calendar.MONTH, -displacement * 3)
+    // Get the current month and date after adjustment
+    val currentYear = calendar.get(Calendar.YEAR)
+    val currentMonth = calendar.get(Calendar.MONTH) + 1
+    // Find what season is this
+    val season = when (currentMonth) {
+        in 1..3 -> Season.WINTER
+        in 4..6 -> Season.SPRING
+        in 7..9 -> Season.SUMMER
+        else -> Season.FALL
+    }
+    return Pair(season, currentYear)
 }

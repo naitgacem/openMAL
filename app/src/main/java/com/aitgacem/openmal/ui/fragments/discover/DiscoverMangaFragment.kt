@@ -4,20 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.aitgacem.openmal.R
-import com.aitgacem.openmal.data.model.MangaRanking
 import com.aitgacem.openmal.databinding.FragmentLinearLayoutBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.MangaDetailFragmentDirections
+import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.aitgacem.openmal.ui.setupSection
-import com.aitgacem.openmalnet.models.ItemForList
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import java.net.URI
+import openmal.domain.ApiError
+import openmal.domain.MediaType
+import openmal.domain.NetworkResult
+import openmal.domain.Work
 
 @AndroidEntryPoint
 class DiscoverMangaFragment : Fragment() {
@@ -39,31 +41,60 @@ class DiscoverMangaFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val glide = Glide.with(this)
         val popularMangaAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
-        viewModel.topPopularManga.observe(viewLifecycleOwner) {
-            popularMangaAdapter.submitList(it)
+        viewModel.topPopularManga.observe(viewLifecycleOwner) {result ->
+            when (result) {
+                is NetworkResult.Success -> popularMangaAdapter.submitList(result.data)
+                is NetworkResult.Error -> onError(result.apiError)
+                is NetworkResult.Exception -> onException()
+            }
         }
         val favMangaAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
-        viewModel.mostFavouritedManga.observe(viewLifecycleOwner) {
-            favMangaAdapter.submitList(it)
+        viewModel.mostFavouritedManga.observe(viewLifecycleOwner) {result ->
+            when (result) {
+                is NetworkResult.Success -> favMangaAdapter.submitList(result.data)
+                is NetworkResult.Error -> onError(result.apiError)
+                is NetworkResult.Exception -> onException()
+            }
         }
         val topDoujinAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
-        viewModel.topDoujin.observe(viewLifecycleOwner) {
-            topDoujinAdapter.submitList(it)
+        viewModel.topDoujin.observe(viewLifecycleOwner) {result ->
+            when (result) {
+                is NetworkResult.Success -> topDoujinAdapter.submitList(result.data)
+                is NetworkResult.Error -> onError(result.apiError)
+                is NetworkResult.Exception -> onException()
+            }
         }
 
-        setupSection(requireContext(),binding.firstTitle, binding.firstRv, MangaRanking.BY_POPULARITY.title, popularMangaAdapter)
-        setupSection(requireContext(),binding.secondTitle, binding.secondRv, MangaRanking.FAVORITE.title, favMangaAdapter)
-        setupSection(requireContext(),binding.thirdTitle, binding.thirdRv, MangaRanking.DOUJIN.title, topDoujinAdapter)
+        setupSection(requireContext(),binding.firstTitle, binding.firstRv, getString(R.string.most_popular), popularMangaAdapter)
+        setupSection(requireContext(),binding.secondTitle, binding.secondRv, getString(R.string.most_favorited), favMangaAdapter)
+        setupSection(requireContext(),binding.thirdTitle, binding.thirdRv, getString(R.string.top_doujin), topDoujinAdapter)
     }
 
-    private fun goToMangaDetail(transitionView: View, it: ItemForList) {
-        val action = MangaDetailFragmentDirections.gotoMangaDetail(
-            id = it.id, imageUrl = it.mainPicture?.medium ?: URI(""), mangaTitle = it.originalTitle
+    private fun goToMangaDetail(transitionView: View, it: Work) {
+        val action = DetailFragmentDirections.gotoDetail(
+            it.id,  it.pictureURL, it.originalTitle, MediaType.MANGA
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
                 transitionView to it.originalTitle
             )
         )
+    }
+    private fun onException() {
+        Toast.makeText(requireContext(), getString(R.string.check_internet), Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    private fun onError(apiError: ApiError) {
+        val message = getString(
+            when (apiError) {
+                ApiError.BAD_REQUEST -> R.string.bad_request
+                ApiError.UNAUTHORIZED -> R.string.unauthorized
+                ApiError.FORBIDDEN -> R.string.forbidden
+                ApiError.NOT_FOUND -> R.string.not_found
+                ApiError.UNKNOWN -> R.string.unknown_error_occurred
+            }
+        )
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

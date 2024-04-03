@@ -20,9 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.aitgacem.openmalnet.models.SeasonEnum { *; }
-
-
+-dontobfuscate
 #------------ RETROFIT ----------------------------------------------#
 # Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
 # EnclosingMethod is required to use InnerClasses.
