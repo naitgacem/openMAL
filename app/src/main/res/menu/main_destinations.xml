@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <item
+        android:id="@+id/home_dest"
+        android:icon="@drawable/ic_home"
+        android:title="@string/home" />
+    <item
+        android:id="@+id/discover_dest"
+        android:icon="@drawable/ic_trending_up"
+        android:title="@string/discover" />
+    <item
+        android:id="@+id/seasonal_dest"
+        android:icon="@drawable/ic_calendar_month"
+        android:title="@string/seasonal" />
+    <item
+        android:id="@+id/profile_dest"
+        android:icon="@drawable/ic_account_circle"
+        android:title="@string/profile" />
+</menu>

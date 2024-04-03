@@ -1,0 +1,58 @@
+[versions]
+agp = "8.3.0"
+gson = "2.10.1"
+kotlin = "1.9.23"
+coreKtx = "1.12.0"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+appcompat = "1.6.1"
+material = "1.11.0"
+activity = "1.8.2"
+constraintlayout = "2.1.4"
+nav_version = "2.7.7"
+ksp = "1.9.23-1.0.19"
+hilt = "2.51"
+glide = "4.16.0"
+hilt-navigation = "1.2.0"
+retrofit = "2.10.0"
+logging-interceptor = "4.12.0"
+datastore = "1.1.0-beta02"
+lifecycle-licedata = "2.7.0"
+recyclerview = "1.3.2"
+coordinator-layout = "1.2.0"
+kotlin-parcelize = "1.9.23"
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "nav_version" }
+recyclerview = { group = "androidx.recyclerview",name = "recyclerview", version.ref = "recyclerview" }
+coordinator-layout = { group = "androidx.coordinatorlayout",name = "coordinatorlayout", version.ref = "coordinator-layout" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+navigation-fragment-ktx = {group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "nav_version"}
+navigation-ui-ktx = {group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "nav_version"}
+hilt-android = {group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}
+hilt-compiler = {group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
+glide-volley-integration = {group = "com.github.bumptech.glide", name = "volley-integration", version.ref = "glide" }
+glide-ksp = {group = "com.github.bumptech.glide", name = "ksp", version.ref = "glide"}
+hilt-navigation-fragment = {group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "hilt-navigation"}
+retrofit = {group = "com.squareup.retrofit2", name = "retrofit", version.ref="retrofit"}
+gson-retrofit = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+http-logging-interceptor = {group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "logging-interceptor"}
+datastore-preferences = {group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore"}
+lifecycle-livedata-ktx = {group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle-licedata"}
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+navigation-safeargs = {id="androidx.navigation.safeargs.kotlin", version.ref = "nav_version"}
+kotlin-parcelize = {id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin-parcelize"}

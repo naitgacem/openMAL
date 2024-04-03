@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">open MAL</string>
+    <string name="home">Home</string>
+    <string name="discover">Discover</string>
+    <string name="seasonal">Seasonal</string>
+    <string name="profile">Profile</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="anime_image_thumbnail">Anime image thumbnail</string>
+    <string name="library">Library</string>
+    <string name="share">Share</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_list">Edit list entry</string>
+</resources>
