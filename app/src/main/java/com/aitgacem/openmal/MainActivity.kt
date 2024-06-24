@@ -2,6 +2,7 @@ package com.aitgacem.openmal
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.enableEdgeToEdge
@@ -11,9 +12,11 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.aitgacem.openmal.data.UserPreferencesRepository
+import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import openmal.domain.MediaType
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -21,6 +24,13 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var preferencesRepository: UserPreferencesRepository
     private val viewModel by viewModels<LoginViewModel>()
+    private val navHostFragment: NavHostFragment
+        get() {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.main_activity_host) as NavHostFragment
+            return navHostFragment
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, true)
@@ -29,12 +39,10 @@ class MainActivity : AppCompatActivity() {
 
         val fullScreenDest = setOf(
             R.id.search_dest,
-            R.id.detail_dest2,
+            R.id.detail_dest,
             R.id.edit_work_dest,
         )
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.main_activity_host) as NavHostFragment
         val navController = navHostFragment.navController
         val bottomBar = findViewById<BottomNavigationView>(R.id.bottom_nav)
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -50,10 +58,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-
         if (intent != null && intent.scheme?.startsWith("openmal") == true) {
             viewModel.initiateLogin(intent.data)
         }
+        navHostFragment.navController.handleDeepLink(intent)
     }
-
 }

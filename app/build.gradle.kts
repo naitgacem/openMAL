@@ -91,5 +91,5 @@ dependencies {
     implementation(project(":openmalnet"))
 
     // MEMORY LEAKS DETECTION
-    debugImplementation(libs.leak.canary)
+    // debugImplementation(libs.leak.canary)
 }

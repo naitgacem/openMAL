@@ -20,9 +20,6 @@
         android:name="com.aitgacem.openmal.ui.fragments.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
-        <deepLink
-            android:id="@+id/deep_link_home"
-            app:uri="openmal://code" />
     </fragment>
     <fragment
         android:id="@+id/seasonal_dest"
@@ -30,27 +27,46 @@
         android:label="fragment_seasonal"
         tools:layout="@layout/fragment_seasonal" />
     <fragment
-        android:id="@+id/detail_dest2"
+        android:id="@+id/detail_dest"
         android:name="com.aitgacem.openmal.ui.fragments.details.DetailFragment"
         android:label="fragment_detail"
         tools:layout="@layout/fragment_detail">
         <argument
             android:name="id"
             app:argType="integer" />
-        <argument android:name="image_url"
-            app:argType="string"
-            app:nullable="true"/>
-        <argument android:name="work_title"
-            app:argType="string"
-            app:nullable="true" />
         <argument
             android:name="media_type"
             app:argType="openmal.domain.MediaType" />
+        <argument
+            android:name="image_url"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="work_title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <deepLink
+            app:action="ACTION_VIEW"
+            app:uri="www.myanimelist.net/{media_type}/{id}" />
+        <deepLink
+            app:action="ACTION_VIEW"
+            app:uri="www.myanimelist.net/{media_type}/{id}/{name}" />
+
+        <deepLink
+            app:action="ACTION_VIEW"
+            app:uri="myanimelist.net/{media_type}/{id}" />
+        <deepLink
+            app:action="ACTION_VIEW"
+            app:uri="myanimelist.net/{media_type}/{id}/{name}" />
+
     </fragment>
 
     <action
         android:id="@+id/goto_detail"
-        app:destination="@+id/detail_dest2">
+        app:destination="@+id/detail_dest">
     </action>
 
     <action
@@ -62,32 +78,34 @@
         android:id="@+id/search_dest"
         android:name="com.aitgacem.openmal.ui.fragments.search.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search"/>
+        tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/login_prompt_dest"
         android:name="com.aitgacem.openmal.ui.fragments.login.LoginPromptFragment"
         android:label="fragment_login_prompt"
-        tools:layout="@layout/fragment_login_prompt"/>
+        tools:layout="@layout/fragment_login_prompt" />
     <fragment
         android:id="@+id/edit_work_dest"
         android:name="com.aitgacem.openmal.ui.fragments.edit.EditListFragment"
-        tools:layout="@layout/fragment_edit_work"
-        android:label="fragment_edit_list">
+        android:label="fragment_edit_list"
+        tools:layout="@layout/fragment_edit_work">
         <argument
             android:name="id"
-            app:argType="integer"/>
+            app:argType="integer" />
         <argument
             android:name="image_url"
             app:argType="string" />
-        <argument android:name="title"
-            app:argType="string"
-            />
-        <argument android:name="media_type"
-            app:argType="openmal.domain.MediaType"/>
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="media_type"
+            app:argType="openmal.domain.MediaType" />
 
 
     </fragment>
-    <action android:id="@+id/goto_edit_list"
-        app:destination="@id/edit_work_dest"/>
+    <action
+        android:id="@+id/goto_edit_list"
+        app:destination="@id/edit_work_dest" />
 
 </navigation>

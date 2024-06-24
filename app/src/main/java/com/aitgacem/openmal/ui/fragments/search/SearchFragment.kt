@@ -92,7 +92,7 @@ class SearchFragment : Fragment() {
 
     private fun goToAnimeDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id, it.pictureURL ?: "", it.originalTitle, MediaType.ANIME
+            it.id, MediaType.ANIME, it.pictureURL ?: "", it.originalTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
@@ -102,7 +102,7 @@ class SearchFragment : Fragment() {
     }
     private fun goToMangaDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id,  it.pictureURL, it.originalTitle, MediaType.MANGA
+            it.id, MediaType.MANGA, it.pictureURL, it.originalTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(

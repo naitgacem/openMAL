@@ -255,6 +255,8 @@ class DetailFragment : Fragment() {
 
     private fun displayWorkInfo(work: Work) {
         with(binding) {
+            // redundantly load image and title for deep links handling
+            Glide.with(this@DetailFragment).load(work.pictureURL).into(workImage)
             workTitle.text = work.originalTitle
             topAppBar.menu[1].setIcon(
                 ResourcesCompat.getDrawable(
@@ -517,13 +519,13 @@ class DetailFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun goToAnimeDetail(transitionView: View, it: Work) {
+    private fun goToAnimeDetail(transitionView: View, work: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id, it.pictureURL ?: "", it.originalTitle, args.mediaType
+            work.id, args.mediaType, work.pictureURL ?: "", work.originalTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.originalTitle
+                transitionView to work.originalTitle
             )
         )
     }
