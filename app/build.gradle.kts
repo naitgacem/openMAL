@@ -85,6 +85,7 @@ dependencies {
 
     //IMAGE
     implementation(libs.glide)
+    implementation(libs.touchImageView)
     ksp(libs.glide.ksp)
 
     // NETWORKING

@@ -19,7 +19,7 @@
         android:id="@+id/profile_dest"
         android:name="com.aitgacem.openmal.ui.fragments.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile"></fragment>
+        tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/seasonal_dest"
         android:name="com.aitgacem.openmal.ui.fragments.seasonal.SeasonalFragment"
@@ -60,6 +60,9 @@
         <deepLink
             app:action="ACTION_VIEW"
             app:uri="myanimelist.net/{media_type}/{id}/{name}" />
+        <action
+            android:id="@+id/view_images"
+            app:destination="@id/images_view_dest" />
 
     </fragment>
 
@@ -86,7 +89,7 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-        <deepLink app:uri="openmal://code?code={authorization_code}"/>
+        <deepLink app:uri="openmal://code?code={authorization_code}" />
 
     </fragment>
     <fragment
@@ -108,6 +111,16 @@
             app:argType="openmal.domain.MediaType" />
 
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/images_view_dest"
+        android:name="com.aitgacem.openmal.ui.fragments.details.ViewImagesFragment"
+        android:label="fragment_view_images"
+        tools:layout="@layout/fragment_view_images">
+        <argument
+            android:name="url_list"
+            app:argType="string[]" />
     </fragment>
     <action
         android:id="@+id/goto_edit_list"

@@ -33,6 +33,7 @@ sealed interface Work {
     val originalTitle: String
     val numReleases: Int
     val pictureURL: String?
+    val pictures: List<String>
     val userPreferredTitle: String
     val synonyms: List<String>
     val startDate: String?
@@ -69,6 +70,7 @@ data class Anime(
     override val originalTitle: String,
     override val numReleases: Int = 0,
     override val pictureURL: String?,
+    override val pictures: List<String> = emptyList(),
     override val userPreferredTitle: String = "",
     override val synonyms: List<String> = emptyList(),
     override val startDate: String? = null,
@@ -110,6 +112,7 @@ data class Manga(
     override val originalTitle: String,
     override val numReleases: Int = 0,
     override val pictureURL: String?,
+    override val pictures: List<String> = emptyList(),
     override val userPreferredTitle: String = "",
     override val synonyms: List<String> = emptyList(),
     override val startDate: String? = null,

@@ -39,6 +39,7 @@ import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -164,7 +165,6 @@ class DetailFragment : Fragment() {
             true
         }
         Glide.with(this).load(args.imageUrl.toString()).into(binding.workImage)
-        binding.workImage.setOnClickListener { viewModel.refresh() }
         binding.topAppBar.setNavigationOnClickListener { findNavController().popBackStack() }
         binding.floatingActionButton.setOnClickListener {
             viewModel.refresh()
@@ -268,6 +268,15 @@ class DetailFragment : Fragment() {
             // redundantly load image and title for deep links handling
             Glide.with(this@DetailFragment).load(work.pictureURL).into(workImage)
             workTitle.text = work.originalTitle
+
+            workImage.setOnClickListener {
+                val extras = FragmentNavigatorExtras(
+                    binding.workImage to work.originalTitle
+                )
+                val action = DetailFragmentDirections.viewImages(work.pictures.toTypedArray())
+                findNavController().navigate(action, extras)
+            }
+
             topAppBar.menu[1].setIcon(
                 ResourcesCompat.getDrawable(
                     resources,
@@ -493,6 +502,8 @@ class DetailFragment : Fragment() {
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         sharedElementEnterTransition = transition
         sharedElementReturnTransition = transition
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     }
 
     private fun onRateButtonClick(view: View) {
