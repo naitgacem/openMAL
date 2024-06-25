@@ -23,7 +23,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var preferencesRepository: UserPreferencesRepository
-    private val viewModel by viewModels<LoginViewModel>()
     private val navHostFragment: NavHostFragment
         get() {
             val navHostFragment =
@@ -56,11 +55,4 @@ class MainActivity : AppCompatActivity() {
         bottomBar.setupWithNavController(navController)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent != null && intent.scheme?.startsWith("openmal") == true) {
-            viewModel.initiateLogin(intent.data)
-        }
-        navHostFragment.navController.handleDeepLink(intent)
-    }
 }

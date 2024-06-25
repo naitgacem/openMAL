@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Base64
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -32,24 +34,25 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
     private var _isLoggedIn = prefs.isLoggedInFlow
     val isLoggedIn = _isLoggedIn.asLiveData()
-
+    private var _loginError = MutableLiveData(false)
+    val loginError: LiveData<Boolean> = _loginError
     private val codeChallenge = generateCodeVerifier()
 
-    fun initiateLogin(uri: Uri?) {
+    fun initiateLogin(authorizationCode: String) {
 
         viewModelScope.launch {
             withContext(NonCancellable){
                 try {
-                    val code: String = runBlocking {
+                    val codeVerifier: String = runBlocking {
                         prefs.codeChallenge.firstOrNull() ?: ""
                     }
-                    if (code.isEmpty())
-                        throw IllegalStateException()
+                    if (codeVerifier.isEmpty())
+                        throw IllegalStateException("Code challenge not found")
                     val response = getToken(
                         apiKey,
                         "authorization_code",
-                        uri?.getQueryParameter("code") ?: "",
-                        code
+                        authorizationCode,
+                        codeVerifier
                     )
                     prefs.updateAccessToken(response.token)
                     prefs.updateRefreshToken(response.refreshToken)
@@ -62,6 +65,7 @@ class LoginViewModel @Inject constructor(
                 } catch (e: Exception) {
                     e.printStackTrace()
                     prefs.updateLoginStatus(false)
+                    _loginError.postValue(true)
                 }
             }
         }

@@ -19,8 +19,7 @@
         android:id="@+id/profile_dest"
         android:name="com.aitgacem.openmal.ui.fragments.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile">
-    </fragment>
+        tools:layout="@layout/fragment_profile"></fragment>
     <fragment
         android:id="@+id/seasonal_dest"
         android:name="com.aitgacem.openmal.ui.fragments.seasonal.SeasonalFragment"
@@ -66,13 +65,11 @@
 
     <action
         android:id="@+id/goto_detail"
-        app:destination="@+id/detail_dest">
-    </action>
+        app:destination="@+id/detail_dest" />
 
     <action
         android:id="@+id/goto_login_prompt"
-        app:destination="@+id/login_prompt_dest">
-    </action>
+        app:destination="@+id/login_prompt_dest" />
 
     <fragment
         android:id="@+id/search_dest"
@@ -83,7 +80,15 @@
         android:id="@+id/login_prompt_dest"
         android:name="com.aitgacem.openmal.ui.fragments.login.LoginPromptFragment"
         android:label="fragment_login_prompt"
-        tools:layout="@layout/fragment_login_prompt" />
+        tools:layout="@layout/fragment_login_prompt">
+        <argument
+            android:name="authorization_code"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <deepLink app:uri="openmal://code?code={authorization_code}"/>
+
+    </fragment>
     <fragment
         android:id="@+id/edit_work_dest"
         android:name="com.aitgacem.openmal.ui.fragments.edit.EditListFragment"

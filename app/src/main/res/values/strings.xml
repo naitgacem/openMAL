@@ -179,4 +179,7 @@
     <string name="last_updated">Last updated</string>
     <string name="start_date">Start date</string>
     <string name="filter">filter</string>
+    <string name="attempting_login">Attempting login…</string>
+    <string name="login_error_occured">Login error occurred</string>
+    <string name="go_back">GO back</string>
 </resources>
