@@ -182,4 +182,5 @@
     <string name="attempting_login">Attempting login…</string>
     <string name="login_error_occured">Login error occurred</string>
     <string name="go_back">GO back</string>
+    <string name="no_browser_found">No browser found</string>
 </resources>

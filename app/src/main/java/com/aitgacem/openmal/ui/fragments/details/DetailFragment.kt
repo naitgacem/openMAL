@@ -115,8 +115,18 @@ class DetailFragment : Fragment() {
                 }
 
                 R.id.browser_btn -> {
-                    val sendIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(sendIntent)
+                    val sendIntent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(Uri.parse(url), "text/html")
+                    }
+                    try {
+                        startActivity(sendIntent)
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.no_browser_found),
+                            LENGTH_SHORT
+                        ).show()
+                    }
                 }
 
                 R.id.lib_btn -> {
@@ -129,7 +139,7 @@ class DetailFragment : Fragment() {
                                 preString = getString(R.string.deleting_work),
                                 postString = getString(R.string.work_deleted_from_library),
                                 errorString = getString(R.string.failed_to_remove_work_from_library),
-                            ){
+                            ) {
                                 editViewModel.delete()
                             }
                         }
@@ -141,7 +151,7 @@ class DetailFragment : Fragment() {
                             preString = getString(R.string.adding_work),
                             postString = getString(R.string.work_added_to_library),
                             errorString = getString(R.string.failed_to_add_work_to_library)
-                        ){
+                        ) {
                             editViewModel.save()
                         }
                     }
