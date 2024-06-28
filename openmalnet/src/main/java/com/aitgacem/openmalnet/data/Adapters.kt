@@ -63,7 +63,10 @@ fun MangaForDetails.toDetailsWork(): Work {
             id = manga.id,
             originalTitle = manga.title,
             pictureURL = manga.mainPicture?.medium.toString(),
-            pictures = listOf(manga.mainPicture?.medium.toString()) + manga.pictures.map { it.medium.toString() },
+            pictures = (listOf(manga.mainPicture?.medium.toString()) + manga.pictures.map { it.medium.toString() })
+                .distinctBy {
+                    it.substringBeforeLast(".")
+                },
             userPreferredTitle = manga.alternativeTitles?.let { alts ->
                 if (alts.en.isNullOrEmpty()) manga.title else alts.en
             } ?: manga.title,
@@ -106,7 +109,10 @@ fun AnimeForDetails.toDetailsWork(): Work {
             id = anime.id,
             originalTitle = anime.title,
             pictureURL = anime.mainPicture?.medium.toString(),
-            pictures = listOf(anime.mainPicture?.medium.toString()) + anime.pictures.map { it.medium.toString() },
+            pictures = (listOf(anime.mainPicture?.medium.toString()) + anime.pictures.map { it.medium.toString() })
+                .distinctBy {
+                    it.substringBeforeLast(".")
+                },
             userPreferredTitle = anime.alternativeTitles?.let { alts ->
                 if (alts.en.isNullOrEmpty()) anime.title else alts.en
             } ?: anime.title,

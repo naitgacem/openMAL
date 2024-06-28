@@ -48,7 +48,7 @@ class ViewImagesFragment : Fragment() {
             override fun onPageSelected(position: Int) {
                 val progress = String.format(
                     getString(R.string.progress_format),
-                    (position + 1).toString(), args.urlList.toSet().size.toString()
+                    (position + 1).toString(), args.urlList.size.toString()
                 )
                 binding.progressPics.text = progress
             }
@@ -67,7 +67,7 @@ class ViewImagesFragment : Fragment() {
 
         val adapter = ImageViewAdapter()
         pager.adapter = adapter
-        adapter.list.addAll(args.urlList.toSet())
+        adapter.list.addAll(args.urlList)
         adapter.notifyItemRangeInserted(0, args.urlList.size)
     }
 }
