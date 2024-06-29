@@ -195,6 +195,7 @@ class DetailFragment : Fragment() {
                     Toast.makeText(
                         requireContext(), getString(R.string.netowork_error_occurred), LENGTH_SHORT
                     ).show()
+                    binding.floatingActionButton.icon = resources.getDrawable(R.drawable.ic_refresh)
                     binding.floatingActionButton.show()
                 }
 
@@ -203,65 +204,6 @@ class DetailFragment : Fragment() {
         setupTransition()
     }
 
-    private suspend fun saveAndToast(
-        preString: String,
-        postString: String,
-        errorString: String,
-        execute: suspend () -> NetworkResult<*>
-    ) {
-        Toast.makeText(
-            requireContext(), preString, LENGTH_SHORT
-        ).show()
-        val result: NetworkResult<*> = execute()
-        when (result) {
-            is NetworkResult.Success -> Toast.makeText(
-                requireContext(),
-                postString,
-                LENGTH_SHORT
-            ).show()
-
-            else -> Toast.makeText(
-                requireContext(),
-                errorString,
-                LENGTH_SHORT
-            ).show()
-        }
-        delay(2000)
-        viewModel.refresh()
-    }
-
-    private fun displayMangaInfo(work: Manga) {
-        with(binding) {
-            releaseStatus.text = resources.getString(
-                when (work.releaseStatus) {
-                    ReleaseStatus.FINISHED -> R.string.manga_finished
-                    ReleaseStatus.NOT_YET_RELEASED -> R.string.manga_not_yet_released
-                    ReleaseStatus.CURRENTLY_RELEASING -> R.string.manga_currently_publishing
-                    ReleaseStatus.ON_HIATUS -> R.string.on_hiatus
-                    ReleaseStatus.OTHER -> R.string.empty_string
-                }
-            )
-            binding.rateTheWork.text = resources.getString(R.string.rate_manga)
-
-            releasePeriod.text = resources.getString(R.string.publishing_period)
-            numReleases.text = String.format(resources.getString(R.string.manga_chapters_count),
-                work.numReleases.takeUnless { it == 0 } ?: "?")
-
-        }
-        binding.relatedSect.text = resources.getString(R.string.related_manga)
-        // Hide unused sections
-        binding.animeStartSeason.hide()
-        with(binding) {
-            animeStudios.hide()
-            animeStudiosTitle.hide()
-            animeSource.hide()
-            animeSourceTitle.hide()
-            animeBroadcastTxt.hide()
-            animeBroadcastTitle.hide()
-            contentRatingSect.hide()
-            contentRating.hide()
-        }
-    }
 
     private fun displayWorkInfo(work: Work) {
         with(binding) {
@@ -369,68 +311,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun showListStatus(work: Work) {
-        val listStatus = work.listStatus
-        // In here, we assume the user is logged in
-        binding.rateBtn.setOnClickListener(::onRateButtonClick)
-        binding.addToLibBtn.setOnClickListener(::gotoEditList)
-        if (listStatus == null) {
-            // Work does not exist in user library
-            binding.libraryStatus.text = resources.getString(R.string.work_not_in_lib)
-            binding.addToLibBtn.show()
-            binding.progressIndicator.hide()
-            binding.progressText.hide()
-            binding.addToLibBtn.text = resources.getString(R.string.add)
-            binding.rateBtn.text = resources.getString(R.string.rate)
-        } else {
-            // Show status and progress ..
-            binding.addToLibBtn.hide()
-            binding.progressIndicator.progress = listStatus.progressCount
-            binding.progressIndicator.show()
-            binding.progressText.show()
-            binding.libraryActionBtn.setOnClickListener(::gotoEditList)
-            val score = listStatus.score
-            if (score > 0) {
-                binding.rateBtn.text = String.format(
-                    resources.getString(R.string.score_given_format), score
-                )
-            } else {
-                binding.rateBtn.text = resources.getString(R.string.rate)
-            }
-            binding.libraryStatus.text = getString(
-                when (listStatus.currentStatus) {
-                    ListStatus.IN_PROGRESS -> if (listStatus.mediaType == MediaType.ANIME) R.string.currently_watching else R.string.currently_reading
-                    ListStatus.COMPLETED -> if (listStatus.mediaType == MediaType.ANIME) R.string.finished_watching else R.string.finished_reading
-                    ListStatus.ON_HOLD -> R.string.on_hold
-                    ListStatus.DROPPED -> R.string.dropped
-                    ListStatus.PLAN_TO -> if (listStatus.mediaType == MediaType.ANIME) R.string.plan_to_watch else R.string.plan_to_read
-                    ListStatus.NON_EXISTENT -> R.string.unknown
-                }
-            )
-            binding.progressIndicator.max =
-                if (work.numReleases > 0) work.numReleases else listStatus.progressCount
-            binding.progressIndicator.show()
-            binding.progressIndicator.setProgress(listStatus.progressCount, true)
-            binding.progressText.text = String.format(
-                resources.getString(R.string.progress_format),
-                listStatus.progressCount.toString(),
-                if (work.numReleases > 0) work.numReleases.toString() else "?"
-            )
-            binding.progressText.show()
-        }
-        binding.rateBtn.show()
-    }
-
-    private fun handleNonLogged() {
-        binding.libraryStatus.text = getString(R.string.login_to_view)
-        binding.rateBtn.text = getString(R.string.login)
-        binding.rateBtn.setOnClickListener {
-            loginViewModel.launchBrowserForLogin {
-                startActivity(it)
-            }
-        }
-        binding.rateBtn.show()
-    }
 
     private fun displayAnimeInfo(work: Anime) {
         binding.releaseStatus.text = getString(
@@ -496,6 +376,103 @@ class DetailFragment : Fragment() {
                 ?: resources.getString(R.string.unknown)
     }
 
+
+    private fun displayMangaInfo(work: Manga) {
+        with(binding) {
+            releaseStatus.text = resources.getString(
+                when (work.releaseStatus) {
+                    ReleaseStatus.FINISHED -> R.string.manga_finished
+                    ReleaseStatus.NOT_YET_RELEASED -> R.string.manga_not_yet_released
+                    ReleaseStatus.CURRENTLY_RELEASING -> R.string.manga_currently_publishing
+                    ReleaseStatus.ON_HIATUS -> R.string.on_hiatus
+                    ReleaseStatus.OTHER -> R.string.empty_string
+                }
+            )
+            binding.rateTheWork.text = resources.getString(R.string.rate_manga)
+
+            releasePeriod.text = resources.getString(R.string.publishing_period)
+            numReleases.text = String.format(resources.getString(R.string.manga_chapters_count),
+                work.numReleases.takeUnless { it == 0 } ?: "?")
+
+        }
+        binding.relatedSect.text = resources.getString(R.string.related_manga)
+        // Hide unused sections
+        binding.animeStartSeason.hide()
+        with(binding) {
+            animeStudios.hide()
+            animeStudiosTitle.hide()
+            animeSource.hide()
+            animeSourceTitle.hide()
+            animeBroadcastTxt.hide()
+            animeBroadcastTitle.hide()
+            contentRatingSect.hide()
+            contentRating.hide()
+        }
+    }
+
+    private fun showListStatus(work: Work) {
+        val listStatus = work.listStatus
+        // In here, we assume the user is logged in
+        binding.rateBtn.setOnClickListener(::onRateButtonClick)
+        binding.addToLibBtn.setOnClickListener(::gotoEditList)
+        if (listStatus == null) {
+            // Work does not exist in user library
+            binding.libraryStatus.text = resources.getString(R.string.work_not_in_lib)
+            binding.addToLibBtn.show()
+            binding.progressIndicator.hide()
+            binding.progressText.hide()
+            binding.addToLibBtn.text = resources.getString(R.string.add)
+            binding.rateBtn.text = resources.getString(R.string.rate)
+        } else {
+            // Show status and progress ..
+            binding.addToLibBtn.hide()
+            binding.progressIndicator.progress = listStatus.progressCount
+            binding.progressIndicator.show()
+            binding.progressText.show()
+            binding.libraryActionBtn.setOnClickListener(::gotoEditList)
+            val score = listStatus.score
+            if (score > 0) {
+                binding.rateBtn.text = String.format(
+                    resources.getString(R.string.score_given_format), score
+                )
+            } else {
+                binding.rateBtn.text = resources.getString(R.string.rate)
+            }
+            binding.libraryStatus.text = getString(
+                when (listStatus.currentStatus) {
+                    ListStatus.IN_PROGRESS -> if (listStatus.mediaType == MediaType.ANIME) R.string.currently_watching else R.string.currently_reading
+                    ListStatus.COMPLETED -> if (listStatus.mediaType == MediaType.ANIME) R.string.finished_watching else R.string.finished_reading
+                    ListStatus.ON_HOLD -> R.string.on_hold
+                    ListStatus.DROPPED -> R.string.dropped
+                    ListStatus.PLAN_TO -> if (listStatus.mediaType == MediaType.ANIME) R.string.plan_to_watch else R.string.plan_to_read
+                    ListStatus.NON_EXISTENT -> R.string.unknown
+                }
+            )
+            binding.progressIndicator.max =
+                if (work.numReleases > 0) work.numReleases else listStatus.progressCount
+            binding.progressIndicator.show()
+            binding.progressIndicator.setProgress(listStatus.progressCount, true)
+            binding.progressText.text = String.format(
+                resources.getString(R.string.progress_format),
+                listStatus.progressCount.toString(),
+                if (work.numReleases > 0) work.numReleases.toString() else "?"
+            )
+            binding.progressText.show()
+        }
+        binding.rateBtn.show()
+    }
+
+    private fun handleNonLogged() {
+        binding.libraryStatus.text = getString(R.string.login_to_view)
+        binding.rateBtn.text = getString(R.string.login)
+        binding.rateBtn.setOnClickListener {
+            loginViewModel.launchBrowserForLogin {
+                startActivity(it)
+            }
+        }
+        binding.rateBtn.show()
+    }
+
     private fun setupTransition() {
         ViewCompat.setTransitionName(binding.workImage, args.workTitle)
         val transition =
@@ -549,6 +526,33 @@ class DetailFragment : Fragment() {
                 transitionView to work.originalTitle
             )
         )
+    }
+
+    private suspend fun saveAndToast(
+        preString: String,
+        postString: String,
+        errorString: String,
+        execute: suspend () -> NetworkResult<*>
+    ) {
+        Toast.makeText(
+            requireContext(), preString, LENGTH_SHORT
+        ).show()
+        val result: NetworkResult<*> = execute()
+        when (result) {
+            is NetworkResult.Success -> Toast.makeText(
+                requireContext(),
+                postString,
+                LENGTH_SHORT
+            ).show()
+
+            else -> Toast.makeText(
+                requireContext(),
+                errorString,
+                LENGTH_SHORT
+            ).show()
+        }
+        delay(2000)
+        viewModel.refresh()
     }
 
     private fun View.hide() {
