@@ -425,6 +425,6 @@
         android:visibility="gone"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        app:icon="@drawable/ic_refresh"
-        android:text="@string/refresh"/>
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

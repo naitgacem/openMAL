@@ -1,6 +1,7 @@
 package com.aitgacem.openmal.ui.fragments.details
 
 import android.content.Intent
+import android.content.res.Resources.Theme
 import android.icu.text.DateFormat
 import android.icu.text.MessageFormat
 import android.net.Uri
@@ -16,6 +17,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
@@ -166,10 +168,6 @@ class DetailFragment : Fragment() {
         }
         Glide.with(this).load(args.imageUrl.toString()).into(binding.workImage)
         binding.topAppBar.setNavigationOnClickListener { findNavController().popBackStack() }
-        binding.floatingActionButton.setOnClickListener {
-            viewModel.refresh()
-            binding.floatingActionButton.hide()
-        }
         viewModel.state.observe(viewLifecycleOwner) { networkResult ->
             when (networkResult) {
                 is NetworkResult.Success -> displayWorkInfo(networkResult.data)
@@ -195,8 +193,12 @@ class DetailFragment : Fragment() {
                     Toast.makeText(
                         requireContext(), getString(R.string.netowork_error_occurred), LENGTH_SHORT
                     ).show()
-                    binding.floatingActionButton.icon = resources.getDrawable(R.drawable.ic_refresh)
-                    binding.floatingActionButton.show()
+                    showFloatingButton(
+                        getString(R.string.refresh), R.drawable.ic_refresh, requireContext().theme
+                    ) {
+                        viewModel.refresh()
+                        binding.floatingActionButton.hide()
+                    }
                 }
 
             }
@@ -458,6 +460,12 @@ class DetailFragment : Fragment() {
                 if (work.numReleases > 0) work.numReleases.toString() else "?"
             )
             binding.progressText.show()
+            showFloatingButton(
+                getString(R.string.edit_list), R.drawable.ic_edit, requireContext().theme
+            ){ view ->
+                gotoEditList(view)
+                binding.floatingActionButton.hide()
+            }
         }
         binding.rateBtn.show()
     }
@@ -553,6 +561,20 @@ class DetailFragment : Fragment() {
         }
         delay(2000)
         viewModel.refresh()
+    }
+
+    private fun showFloatingButton(
+        text: String,
+        @DrawableRes id: Int,
+        theme: Theme,
+        onClick: (View) -> Unit = {},
+    ) {
+        binding.floatingActionButton.icon = ResourcesCompat.getDrawable(
+            resources, id, theme
+        )
+        binding.floatingActionButton.text = text
+        binding.floatingActionButton.setOnClickListener(onClick)
+        binding.floatingActionButton.show()
     }
 
     private fun View.hide() {
