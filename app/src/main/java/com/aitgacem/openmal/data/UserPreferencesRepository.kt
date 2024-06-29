@@ -81,6 +81,18 @@ class UserPreferencesRepository @Inject constructor(
             }
         }
     }
+    fun toggleNsfw(enableNsfw: Boolean){
+        runBlocking {
+            dataStore.edit {
+                it[PreferencesKeys.ENABLE_NSFW] = enableNsfw
+            }
+        }
+    }
+    val isNsfwEnabledFlow = dataStore.data.catch { exception ->
+        onError(exception)
+    }.map {
+        it[PreferencesKeys.ENABLE_NSFW] ?: false
+    }
 }
 
 private object PreferencesKeys {
@@ -88,6 +100,7 @@ private object PreferencesKeys {
     val ACCESS_TOKEN = stringPreferencesKey("access_token")
     val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     val CODE_CHALLENGE = stringPreferencesKey("code_challenge")
+    val ENABLE_NSFW = booleanPreferencesKey("enable_nsfw")
 }
 
 private suspend fun FlowCollector<Preferences>.onError(

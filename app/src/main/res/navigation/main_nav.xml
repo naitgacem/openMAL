@@ -125,5 +125,16 @@
     <action
         android:id="@+id/goto_edit_list"
         app:destination="@id/edit_work_dest" />
-
+    <fragment
+        android:id="@+id/settings_dest"
+        android:name="com.aitgacem.openmal.ui.fragments.profile.PreferencesFragment"
+        android:label="fragment_preferences"
+        tools:layout="@layout/fragment_preferences"/>
+    <action
+        android:id="@+id/goto_settings"
+        app:destination="@+id/settings_dest"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
 </navigation>

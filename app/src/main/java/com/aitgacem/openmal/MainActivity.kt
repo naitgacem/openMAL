@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             R.id.detail_dest,
             R.id.edit_work_dest,
             R.id.images_view_dest,
+            R.id.settings_dest,
         )
 
         val navController = navHostFragment.navController

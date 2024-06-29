@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.OpenMAL" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="filter_chip_style">@style/Widget.Material3.Chip.Filter</item>
+        <item name="settings_title_font_size">16sp</item>
+        <item name="settings_subtitle_font_size">12sp</item>
     </style>
 </resources>

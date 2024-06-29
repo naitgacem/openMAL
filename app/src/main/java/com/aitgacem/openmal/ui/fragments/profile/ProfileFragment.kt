@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.aitgacem.openmal.R
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +40,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         val viewPager = view.findViewById<ViewPager2>(R.id.pager)
+        val menu = view.findViewById<MaterialToolbar>(R.id.toolbar)
         viewPager.isUserInputEnabled = false
         val adapter = TabbedLayoutAdapter(this)
         viewPager.adapter = adapter
@@ -48,6 +51,11 @@ class ProfileFragment : Fragment() {
                 else -> throw IllegalStateException()
             }
         }.attach()
+        menu.setOnMenuItemClickListener {_ ->
+            val action = ProfileFragmentDirections.gotoSettings()
+            findNavController().navigate(action)
+            true
+        }
     }
 
 }

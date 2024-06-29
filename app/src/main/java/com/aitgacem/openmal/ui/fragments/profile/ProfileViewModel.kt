@@ -5,8 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aitgacem.openmal.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import openmal.domain.ListStatus
 import openmal.domain.MediaType
@@ -19,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val prefs: UserPreferencesRepository,
     val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val mediaType =
@@ -43,25 +47,32 @@ class ProfileViewModel @Inject constructor(
     val filter = _filter
     private var sort = MutableLiveData(SortType.DEFAULT)
 
+    private val isNsfwEnabled = prefs.isNsfwEnabledFlow
+
     init {
         refresh()
+        refreshIfNeeded()
     }
 
 
     private fun loadUserWorkList() {
-        when (mediaType) {
-            MediaType.ANIME -> {
-                viewModelScope.launch {
-                    val userList = userRepository.getUserAnimeList(status = _filter.value!!, sort = sort.value!!)
-                    _workList.postValue(userList)
+        viewModelScope.launch {
+            val nsfw = isNsfwEnabled.firstOrNull() ?: false
+            val userList = when (mediaType) {
+                MediaType.ANIME -> {
+                    userRepository.getUserAnimeList(
+                        status = _filter.value!!, sort = sort.value!!, nsfw = nsfw
+                    )
+                }
+
+                MediaType.MANGA -> {
+                    userRepository.getUserMangaList(
+                        status = _filter.value!!,
+                        sort = sort.value!!,
+                    )
                 }
             }
-            MediaType.MANGA -> {
-                viewModelScope.launch {
-                    val userList = userRepository.getUserMangaList(status = _filter.value!!, sort = sort.value!!)
-                    _workList.postValue(userList)
-                }
-            }
+            _workList.postValue(userList)
         }
     }
 
@@ -93,6 +104,14 @@ class ProfileViewModel @Inject constructor(
     fun refresh() {
         loadUserWorkList()
         loadUserStats()
+    }
+
+    private fun refreshIfNeeded() {
+        viewModelScope.launch {
+            isNsfwEnabled.distinctUntilChanged().collect { _ ->
+                refresh()
+            }
+        }
     }
 
     fun setLoading(state: Boolean) {

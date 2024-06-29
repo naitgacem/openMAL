@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="filter_chip_style" format="reference"/>
+    <attr name="settings_title_font_size" format="dimension"/>
+    <attr name="settings_subtitle_font_size" format="dimension"/>
 </resources>

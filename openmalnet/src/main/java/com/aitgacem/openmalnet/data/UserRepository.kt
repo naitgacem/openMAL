@@ -136,6 +136,7 @@ class UserRepository @Inject constructor(
     suspend fun getUserAnimeList(
         status: ListStatus = ListStatus.NON_EXISTENT,
         sort: SortType = SortType.DEFAULT,
+        nsfw: Boolean = false,
     ): NetworkResult<List<Work>> {
         val result = handleApi {
             userService.getUserAnimeList(
@@ -157,6 +158,7 @@ class UserRepository @Inject constructor(
                 },
                 limit = 50,
                 offset = 0,
+                nsfw = nsfw,
             )
 
         }

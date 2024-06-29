@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|snap"
             app:navigationIcon="@drawable/ic_account_circle"
+            app:menu="@menu/profile_menu"
             app:title="@string/profile" />
 
         <com.google.android.material.tabs.TabLayout
