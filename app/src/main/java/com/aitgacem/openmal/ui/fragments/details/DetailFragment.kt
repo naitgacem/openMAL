@@ -211,11 +211,11 @@ class DetailFragment : Fragment() {
         with(binding) {
             // redundantly load image and title for deep links handling
             Glide.with(this@DetailFragment).load(work.pictureURL).into(workImage)
-            workTitle.text = work.originalTitle
+            workTitle.text = work.userPreferredTitle
 
             workImage.setOnClickListener {
                 val extras = FragmentNavigatorExtras(
-                    binding.workImage to work.originalTitle
+                    binding.workImage to work.defaultTitle
                 )
                 val action = DetailFragmentDirections.viewImages(work.pictures.toTypedArray())
                 findNavController().navigate(action, extras)
@@ -289,10 +289,10 @@ class DetailFragment : Fragment() {
 
                     Glide.with(this@DetailFragment).load(edge.pictureURL).override(200).fitCenter()
                         .into(imageView)
-                    title.text = edge.originalTitle
+                    title.text = edge.userPreferredTitle
                     relationType.text = relation
 
-                    horizontalChip.transitionName = edge.originalTitle // Shared element transition
+                    horizontalChip.transitionName = edge.userPreferredTitle // Shared element transition
                     binding.relatedWork.addView(horizontalChip)
                     horizontalChip.setOnClickListener {
                         goToAnimeDetail(it, edge)
@@ -527,11 +527,11 @@ class DetailFragment : Fragment() {
 
     private fun goToAnimeDetail(transitionView: View, work: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            work.id, args.mediaType, work.pictureURL ?: "", work.originalTitle
+            work.id, args.mediaType, work.pictureURL ?: "", work.defaultTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to work.originalTitle
+                transitionView to work.defaultTitle
             )
         )
     }

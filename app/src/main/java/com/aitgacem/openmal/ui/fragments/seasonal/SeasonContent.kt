@@ -76,11 +76,11 @@ class SeasonContent() : Fragment() {
 
     private fun goToAnimeDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id,  MediaType.ANIME, it.pictureURL ?: "", it.originalTitle
+            it.id,  MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.originalTitle
+                transitionView to it.defaultTitle
             )
         )
     }

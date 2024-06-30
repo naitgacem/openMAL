@@ -188,4 +188,6 @@
     <string name="english">English</string>
     <string name="japanese">Japanese</string>
     <string name="preferred_title_language">Preferred work title language</string>
+    <string name="default_style">Default style</string>
+    <string name="romaji">Romaji</string>
 </resources>

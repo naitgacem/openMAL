@@ -13,6 +13,7 @@ enum class ListStatus {
     PLAN_TO,
     NON_EXISTENT,
 }
+
 enum class SortType {
     SCORE,
     LAST_UPDATE,
@@ -20,7 +21,8 @@ enum class SortType {
     START_DATE,
     DEFAULT,
 }
-enum class Priority {LOW, MEDIUM, HIGH,}
+
+enum class Priority { LOW, MEDIUM, HIGH, }
 
 enum class ReleaseStatus {
     CURRENTLY_RELEASING,
@@ -40,4 +42,11 @@ enum class ContentRating(val description: String) {
     R_PLUS("R+ - Profanity & Mild Nudity"),
     RX("Rx - Hentai"),
     UNKNOWN("Unknown")
+}
+
+enum class PreferredTitleStyle {
+    PREFER_DEFAULT,
+    PREFER_ENGLISH,
+    PREFER_JAPANESE,
+    PREFER_ROMAJI
 }

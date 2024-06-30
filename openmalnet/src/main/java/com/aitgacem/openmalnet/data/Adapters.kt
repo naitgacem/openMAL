@@ -16,6 +16,11 @@ import openmal.domain.Genre
 import openmal.domain.ListStatus
 import openmal.domain.Manga
 import openmal.domain.MediaType
+import openmal.domain.PreferredTitleStyle
+import openmal.domain.PreferredTitleStyle.PREFER_DEFAULT
+import openmal.domain.PreferredTitleStyle.PREFER_ENGLISH
+import openmal.domain.PreferredTitleStyle.PREFER_JAPANESE
+import openmal.domain.PreferredTitleStyle.PREFER_ROMAJI
 import openmal.domain.Priority
 import openmal.domain.ReleaseStatus
 import openmal.domain.Season
@@ -43,33 +48,36 @@ fun String.toListStatus(): ListStatus {
     }
 }
 
-fun AnimeForList.toListWork(): Work {
-    this.let {
-        val englishTitle = it.alternativeTitles?.en ?: ""
+fun AnimeForList.toListWork(
+    preferredTitleStyle: PreferredTitleStyle
+): Work {
+    this.let { anime: AnimeForList ->
         return Anime(
-            id = it.id,
-            originalTitle = it.title,
-            pictureURL = it.mainPicture?.medium.toString(),
-            userPreferredTitle = englishTitle.ifBlank { it.title },
-            synonyms = it.alternativeTitles?.synonyms ?: emptyList(),
-            meanScore = it.mean
+            id = anime.id,
+            defaultTitle = anime.title,
+            pictureURL = anime.mainPicture?.medium.toString(),
+            userPreferredTitle = getAnimePreferredTitle(anime, preferredTitleStyle),
+            synonyms = anime.alternativeTitles?.synonyms ?: emptyList(),
+            meanScore = anime.mean,
+            listStatus = anime.myListStatus?.toUserList(),
         )
     }
 }
 
-fun MangaForDetails.toDetailsWork(): Work {
+
+fun MangaForDetails.toDetailsWork(
+    preferredTitleStyle: PreferredTitleStyle
+): Work {
     this.let { manga: MangaForDetails ->
         return Manga(
             id = manga.id,
-            originalTitle = manga.title,
+            defaultTitle = manga.title,
             pictureURL = manga.mainPicture?.medium.toString(),
             pictures = (listOf(manga.mainPicture?.medium.toString()) + manga.pictures.map { it.medium.toString() })
                 .distinctBy {
                     it.substringBeforeLast(".")
                 },
-            userPreferredTitle = manga.alternativeTitles?.let { alts ->
-                if (alts.en.isNullOrEmpty()) manga.title else alts.en
-            } ?: manga.title,
+            userPreferredTitle = getMangaPreferredTitle(manga, preferredTitleStyle),
             synonyms = manga.alternativeTitles?.synonyms ?: emptyList(),
             contentType = manga.mediaType,
             releaseStatus = manga.status.toReleaseStatus(),
@@ -87,10 +95,10 @@ fun MangaForDetails.toDetailsWork(): Work {
             updatedAt = manga.updatedAt,
             listStatus = manga.myListStatus?.toUserList(),
             relatedWork = manga.relatedManga.map {
-                Pair(it.node.toListWork(), it.relationTypeFormatted)
+                Pair(it.node.toListWork(preferredTitleStyle), it.relationTypeFormatted)
             },
             recommendations = manga.recommendations.map {
-                Pair(it.node.toListWork(), it.numRecommendations)
+                Pair(it.node.toListWork(preferredTitleStyle), it.numRecommendations)
             },
             numVolumes = manga.numVolumes,
             authors = List(manga.authors.size) { index ->
@@ -103,19 +111,19 @@ fun MangaForDetails.toDetailsWork(): Work {
     }
 }
 
-fun AnimeForDetails.toDetailsWork(): Work {
+fun AnimeForDetails.toDetailsWork(
+    preferredTitleStyle: PreferredTitleStyle
+): Work {
     this.let { anime: AnimeForDetails ->
         return Anime(
             id = anime.id,
-            originalTitle = anime.title,
+            defaultTitle = anime.title,
             pictureURL = anime.mainPicture?.medium.toString(),
             pictures = (listOf(anime.mainPicture?.medium.toString()) + anime.pictures.map { it.medium.toString() })
                 .distinctBy {
                     it.substringBeforeLast(".")
                 },
-            userPreferredTitle = anime.alternativeTitles?.let { alts ->
-                if (alts.en.isNullOrEmpty()) anime.title else alts.en
-            } ?: anime.title,
+            userPreferredTitle = getAnimePreferredTitle(anime, preferredTitleStyle),
             synonyms = anime.alternativeTitles?.synonyms ?: emptyList(),
             contentType = anime.mediaType,
             releaseStatus = anime.status.toReleaseStatus(),
@@ -133,10 +141,10 @@ fun AnimeForDetails.toDetailsWork(): Work {
             updatedAt = anime.updatedAt,
             listStatus = anime.myListStatus?.toUserList(),
             relatedWork = anime.relatedAnime.map {
-                Pair(it.node.toListWork(), it.relationTypeFormatted)
+                Pair(it.node.toListWork(preferredTitleStyle), it.relationTypeFormatted)
             },
             recommendations = anime.recommendations.map {
-                Pair(it.node.toListWork(), it.numRecommendations)
+                Pair(it.node.toListWork(preferredTitleStyle), it.numRecommendations)
             },
             startSeason = anime.startSeason?.let { Pair(it.season.toSeason(), it.year) },
             broadcastTime = anime.broadcast?.let { broadcast ->
@@ -277,16 +285,55 @@ fun AnimeForListAllOfMyListStatus.toUserList(): UserListStatus {
     )
 }
 
-fun MangaForList.toListWork(): Work {
-    this.let {
-        val englishTitle = it.alternativeTitles?.en ?: ""
+fun MangaForList.toListWork(
+    preferredTitleStyle: PreferredTitleStyle
+): Work {
+    this.let { manga: MangaForList ->
         return Manga(
-            id = it.id,
-            originalTitle = it.title,
-            pictureURL = it.mainPicture?.medium.toString(),
-            userPreferredTitle = englishTitle.ifBlank { it.title },
-            synonyms = it.alternativeTitles?.synonyms ?: emptyList(),
-            meanScore = it.mean,
+            id = manga.id,
+            defaultTitle = manga.title,
+            pictureURL = manga.mainPicture?.medium.toString(),
+            userPreferredTitle = getMangaPreferredTitle(manga, preferredTitleStyle),
+            synonyms = manga.alternativeTitles?.synonyms ?: emptyList(),
+            meanScore = manga.mean,
+            listStatus = manga.myListStatus?.toUserList()
         )
+    }
+}
+
+fun getAnimePreferredTitle(anime: AnimeForDetails, preferredTitleStyle: PreferredTitleStyle): String {
+    return when (preferredTitleStyle) {
+        PREFER_DEFAULT, PREFER_ROMAJI -> anime.title
+        PREFER_ENGLISH -> anime.alternativeTitles?.en.ifNullOrBlank { anime.title }
+        PREFER_JAPANESE -> anime.alternativeTitles?.ja.ifNullOrBlank { anime.title }
+    }
+}
+fun getAnimePreferredTitle(anime: AnimeForList, preferredTitleStyle: PreferredTitleStyle): String {
+    return when (preferredTitleStyle) {
+        PREFER_DEFAULT, PREFER_ROMAJI -> anime.title
+        PREFER_ENGLISH -> anime.alternativeTitles?.en.ifNullOrBlank { anime.title }
+        PREFER_JAPANESE -> anime.alternativeTitles?.ja.ifNullOrBlank { anime.title }
+    }
+}
+
+fun getMangaPreferredTitle(manga: MangaForDetails, preferredTitleStyle: PreferredTitleStyle): String {
+    return when (preferredTitleStyle) {
+        PREFER_DEFAULT, PREFER_ROMAJI -> manga.title
+        PREFER_ENGLISH -> manga.alternativeTitles?.en.ifNullOrBlank { manga.title }
+        PREFER_JAPANESE -> manga.alternativeTitles?.ja.ifNullOrBlank { manga.title }
+    }
+}
+fun getMangaPreferredTitle(manga: MangaForList, preferredTitleStyle: PreferredTitleStyle): String {
+    return when (preferredTitleStyle) {
+        PREFER_DEFAULT, PREFER_ROMAJI -> manga.title
+        PREFER_ENGLISH -> manga.alternativeTitles?.en.ifNullOrBlank { manga.title }
+        PREFER_JAPANESE -> manga.alternativeTitles?.ja.ifNullOrBlank { manga.title }
+    }
+}
+private fun String?.ifNullOrBlank(other: () -> String): String {
+    return if (this.isNullOrBlank()) {
+        other()
+    } else {
+        this
     }
 }

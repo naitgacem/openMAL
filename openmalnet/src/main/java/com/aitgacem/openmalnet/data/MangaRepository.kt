@@ -4,12 +4,15 @@ package com.aitgacem.openmalnet.data
 import com.aitgacem.openmalnet.api.mal.MangaService
 import com.aitgacem.openmalnet.models.MangaForDetails
 import com.aitgacem.openmalnet.models.MangaListForRanking
+import kotlinx.coroutines.flow.firstOrNull
 import openmal.domain.NetworkResult
+import openmal.domain.PreferredTitleStyle
 import openmal.domain.Work
 import javax.inject.Inject
 
 class MangaRepository @Inject constructor(
-    private val mangaService: MangaService
+    private val mangaService: MangaService,
+    private val prefs: UserPreferencesRepository,
 ) {
     private val listFields = "id,title,main_picture,alternative_titles"
 
@@ -24,6 +27,7 @@ class MangaRepository @Inject constructor(
     }
 
     private suspend fun getRankingManga(rankingType: String): NetworkResult<List<Work>> {
+        val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         val result: NetworkResult<MangaListForRanking> = handleApi {
             mangaService.getMangaRanking(
                 rankingType = rankingType, limit = 50, offset = 0, fields = listFields
@@ -34,7 +38,7 @@ class MangaRepository @Inject constructor(
             is NetworkResult.Exception -> NetworkResult.Exception(result.e)
             is NetworkResult.Success -> {
                 val animeList = result.data.data.map { it.node }
-                NetworkResult.Success(animeList.map { it.toListWork() })
+                NetworkResult.Success(animeList.map { it.toListWork(preferredTitleStyle) })
             }
         }
     }
@@ -59,6 +63,7 @@ class MangaRepository @Inject constructor(
     suspend fun getMangaDetails(
         id: Int,
     ): NetworkResult<Work> {
+        val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         val result: NetworkResult<MangaForDetails> = handleApi {
             mangaService.getMangaDetails(
                 id = id,
@@ -66,7 +71,7 @@ class MangaRepository @Inject constructor(
             )
         }
         return when (result) {
-            is NetworkResult.Success -> NetworkResult.Success(result.data.toDetailsWork())
+            is NetworkResult.Success -> NetworkResult.Success(result.data.toDetailsWork(preferredTitleStyle))
             is NetworkResult.Error -> NetworkResult.Error(result.code, result.code.toErrorEnum())
             is NetworkResult.Exception -> NetworkResult.Exception(result.e)
         }

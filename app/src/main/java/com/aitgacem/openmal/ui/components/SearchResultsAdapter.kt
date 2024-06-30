@@ -62,7 +62,7 @@ class SearchResultViewHolder(itemView: View, val gotoDetail: (View, Work) -> Uni
     }
 
     fun bind(glide: RequestManager, item: Work) {
-        ViewCompat.setTransitionName(imageView, item.originalTitle)
+        ViewCompat.setTransitionName(imageView, item.defaultTitle)
         currentItem = item
         glide
             .load(item.pictureURL)

@@ -3,11 +3,13 @@ package com.aitgacem.openmalnet.data
 import com.aitgacem.openmalnet.api.mal.UserService
 import com.aitgacem.openmalnet.models.AnimeListStatus
 import com.aitgacem.openmalnet.models.MangaListStatus
+import kotlinx.coroutines.flow.firstOrNull
 import openmal.domain.Anime
 import openmal.domain.ListStatus
 import openmal.domain.Manga
 import openmal.domain.MediaType
 import openmal.domain.NetworkResult
+import openmal.domain.PreferredTitleStyle
 import openmal.domain.SortType
 import openmal.domain.User
 import openmal.domain.UserListStatus
@@ -16,7 +18,10 @@ import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val userService: UserService,
+    private val prefs: UserPreferencesRepository,
 ) {
+
+
     suspend fun updateAnimeListStatus(
         id: Int,
         status: ListStatus,
@@ -133,6 +138,8 @@ class UserRepository @Inject constructor(
         }
     }
 
+    private val animeFields = "my_list_status,num_episodes,alternative_titles"
+    private val mangaFields =  "my_list_status,num_chapters,alternative_titles"
     suspend fun getUserAnimeList(
         status: ListStatus = ListStatus.NON_EXISTENT,
         sort: SortType = SortType.DEFAULT,
@@ -159,9 +166,11 @@ class UserRepository @Inject constructor(
                 limit = 50,
                 offset = 0,
                 nsfw = nsfw,
+                fields = animeFields
             )
 
         }
+        val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         return when (result) {
             is NetworkResult.Error -> NetworkResult.Error(result.code, result.apiError)
             is NetworkResult.Exception -> NetworkResult.Exception(result.e)
@@ -169,9 +178,9 @@ class UserRepository @Inject constructor(
                 val animeList = result.data.data.map {
                     Anime(
                         id = it.node.id,
-                        originalTitle = it.node.title,
+                        defaultTitle = it.node.title,
                         pictureURL = it.node.mainPicture?.medium.toString(),
-                        userPreferredTitle = it.node.title,
+                        userPreferredTitle = getAnimePreferredTitle(it.node, preferredTitleStyle),
                         synonyms = it.node.alternativeTitles?.synonyms ?: emptyList(),
                         numReleases = it.node.numEpisodes,
                         listStatus = UserListStatus( // TODO check the rest of the properties and how are they related to the [EditList]
@@ -190,6 +199,7 @@ class UserRepository @Inject constructor(
     suspend fun getUserMangaList(
         status: ListStatus = ListStatus.NON_EXISTENT,
         sort: SortType = SortType.DEFAULT,
+        nsfw: Boolean = false,
     ): NetworkResult<List<Work>> {
         val result = handleApi {
             userService.getUserMangaList(
@@ -210,10 +220,13 @@ class UserRepository @Inject constructor(
                     else -> null
                 },
                 limit = 50,
-                offset = 0
+                offset = 0,
+                nsfw = nsfw,
+                fields = mangaFields
             )
 
         }
+        val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         return when (result) {
             is NetworkResult.Error -> NetworkResult.Error(result.code, result.apiError)
             is NetworkResult.Exception -> NetworkResult.Exception(result.e)
@@ -221,9 +234,9 @@ class UserRepository @Inject constructor(
                 val mangaList = result.data.data.map {
                     Manga(
                         id = it.node.id,
-                        originalTitle = it.node.title,
+                        defaultTitle = it.node.title,
                         pictureURL = it.node.mainPicture?.medium.toString(),
-                        userPreferredTitle = it.node.title,
+                        userPreferredTitle = getMangaPreferredTitle(it.node, preferredTitleStyle),
                         synonyms = it.node.alternativeTitles?.synonyms ?: emptyList(),
                         numReleases = it.node.numChapters,
                         listStatus = UserListStatus( // TODO check the rest of the properties and how are they related to the [EditList]

@@ -78,35 +78,27 @@ class SearchFragment : Fragment() {
             )
         )
         viewModel.suggestions.observe(viewLifecycleOwner) { suggestionsList ->
-            val suggestions = suggestionsList.map {
-                SearchSuggestion(
-                    it.userPreferredTitle,
-                    it.originalTitle,
-                    it.synonyms,
-                    R.drawable.ic_search
-                )
-            }
-            suggestionsAdapter.submitList(suggestions)
+            suggestionsAdapter.submitList(suggestionsList)
         }
     }
 
     private fun goToAnimeDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.ANIME, it.pictureURL ?: "", it.originalTitle
+            it.id, MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.originalTitle
+                transitionView to it.defaultTitle
             )
         )
     }
     private fun goToMangaDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.MANGA, it.pictureURL, it.originalTitle
+            it.id, MediaType.MANGA, it.pictureURL, it.defaultTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.originalTitle
+                transitionView to it.defaultTitle
             )
         )
     }

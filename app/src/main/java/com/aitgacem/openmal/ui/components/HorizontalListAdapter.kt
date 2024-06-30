@@ -48,12 +48,12 @@ class HorizontalListAdapter(private val glide: RequestManager, private val onCli
         }
 
         fun bind(glide: RequestManager, item: Work) {
-            ViewCompat.setTransitionName(imageView, item.originalTitle)
+            ViewCompat.setTransitionName(imageView, item.defaultTitle)
             currentItem = item
             glide
                 .load(item.pictureURL)
                 .into(imageView)
-            textView.text = item.originalTitle
+            textView.text = item.userPreferredTitle
         }
     }
 }

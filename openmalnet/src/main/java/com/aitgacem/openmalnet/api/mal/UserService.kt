@@ -69,7 +69,7 @@ interface UserService {
         @Query("sort") sort: String? = null,
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
-        @Query("fields") fields: String? = "list_status,num_episodes",
+        @Query("fields") fields: String?,
         @Query("nsfw") nsfw: Boolean = true
     ): Response<UserAnimeList>
 
@@ -80,7 +80,7 @@ interface UserService {
         @Query("sort") sort: String? = null,
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
-        @Query("fields") fields: String? = "list_status,num_chapters",
+        @Query("fields") fields: String?,
         @Query("nsfw") nsfw: Boolean = true
     ): Response<UserMangaList>
 

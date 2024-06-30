@@ -4,13 +4,16 @@ import com.aitgacem.openmalnet.api.mal.AnimeService
 import com.aitgacem.openmalnet.api.mal.MangaService
 import com.aitgacem.openmalnet.models.AnimeList
 import com.aitgacem.openmalnet.models.MangaList
+import kotlinx.coroutines.flow.firstOrNull
 import openmal.domain.NetworkResult
+import openmal.domain.PreferredTitleStyle
 import openmal.domain.Work
 import javax.inject.Inject
 
 class SearchRepository @Inject constructor(
     private val animeService: AnimeService,
     private val mangaService: MangaService,
+    private val prefs: UserPreferencesRepository,
 ) {
     private val searchFields = "alternative_titles,mean"
     suspend fun search(
@@ -18,6 +21,8 @@ class SearchRepository @Inject constructor(
         limit: Int? = null,
         offset: Int? = null,
     ): NetworkResult<List<Work>> {
+        val preferredTitleStyle =
+            prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         val animeResults: NetworkResult<AnimeList> =
             handleApi { animeService.getAnimeList(query, limit, offset, searchFields) }
         val mangaResults: NetworkResult<MangaList> =
@@ -34,10 +39,12 @@ class SearchRepository @Inject constructor(
 
         // combine results
         if (mangaResults is NetworkResult.Success) {
-            result.addAll(mangaResults.data.data.map { it.node }.map { it.toListWork() })
+            result.addAll(mangaResults.data.data.map { it.node }
+                .map { it.toListWork(preferredTitleStyle) })
         }
         if (animeResults is NetworkResult.Success) {
-            result.addAll(animeResults.data.data.map { it.node }.map { it.toListWork() })
+            result.addAll(animeResults.data.data.map { it.node }
+                .map { it.toListWork(preferredTitleStyle) })
         }
         return NetworkResult.Success(result.sortedByDescending { it.meanScore })
     }

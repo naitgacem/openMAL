@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.aitgacem.openmal.R
+import com.aitgacem.openmal.ui.components.WorkDiffCallBack
 import com.bumptech.glide.RequestManager
+import openmal.domain.Work
 
 class SearchSuggestionsAdapter(private val glide: RequestManager, private val onClick: (String) -> Unit) :
-    ListAdapter<SearchSuggestion, SearchSuggestionViewHolder>(StringDiffCallback) {
+    ListAdapter<Work, SearchSuggestionViewHolder>(WorkDiffCallBack) {
     override fun onBindViewHolder(holder: SearchSuggestionViewHolder, position: Int) {
         val term = getItem(position)
         holder.bind(term, glide)
@@ -36,7 +38,7 @@ class SearchSuggestionViewHolder(itemView: View, val onClick: (String) -> Unit) 
     private val altTitle = itemView.findViewById<TextView>(R.id.suggestion_text_alt)
     private val synonymTitle = itemView.findViewById<TextView>(R.id.suggestion_text_synonyms)
     private val suggestionsContainer: LinearLayout = itemView.findViewById(R.id.suggestions)
-    private var currentItem: SearchSuggestion? = null
+    private var currentItem: Work? = null
     private lateinit var suggestion: String
 
     init {
@@ -48,17 +50,17 @@ class SearchSuggestionViewHolder(itemView: View, val onClick: (String) -> Unit) 
         }
     }
 
-    fun bind(suggestion: SearchSuggestion, glide: RequestManager) {
+    fun bind(suggestion: Work, glide: RequestManager) {
         currentItem = suggestion.also {
-            this.suggestion = it.title
+            this.suggestion = it.defaultTitle
         }
-        val drawable = AppCompatResources.getDrawable(itemView.context, suggestion.resId)
+        val drawable = AppCompatResources.getDrawable(itemView.context, R.drawable.ic_search)
         glide.load(drawable).into(imageView)
-        mainTitle.text = suggestion.title
-        if (suggestion.title == suggestion.alternativeTitle) {
-            altTitle.visibility = GONE
+        mainTitle.text = suggestion.userPreferredTitle
+        if (suggestion.defaultTitle != suggestion.userPreferredTitle) {
+            altTitle.text = suggestion.defaultTitle
         } else {
-            altTitle.text = suggestion.alternativeTitle
+            altTitle.visibility = GONE
         }
         if (suggestion.synonyms.isEmpty()) {
             suggestionsContainer.visibility = GONE
@@ -69,22 +71,5 @@ class SearchSuggestionViewHolder(itemView: View, val onClick: (String) -> Unit) 
             )
 
         }
-    }
-}
-
-data class SearchSuggestion(
-    val title: String,
-    val alternativeTitle: String,
-    val synonyms: List<String>,
-    @DrawableRes val resId: Int
-)
-
-object StringDiffCallback : DiffUtil.ItemCallback<SearchSuggestion>() {
-    override fun areContentsTheSame(oldItem: SearchSuggestion, newItem: SearchSuggestion): Boolean {
-        return oldItem == newItem
-    }
-
-    override fun areItemsTheSame(oldItem: SearchSuggestion, newItem: SearchSuggestion): Boolean {
-        return oldItem == newItem
     }
 }

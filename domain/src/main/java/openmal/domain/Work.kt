@@ -5,7 +5,7 @@ package openmal.domain
  * @property contentType The content type of the work. TV series, OVA, ...
  * @property releaseStatus Finished, Airing/publishing, ...
  * @property id The unique identifier of the work.
- * @property originalTitle The display title of the work.
+ * @property defaultTitle The default title of the work.
  * @property numReleases The number of episodes/chapters released.
  * @property pictureURL The URL of the picture associated with the work.
  * @property userPreferredTitle The user-preferred title. English, Japanese ...
@@ -30,11 +30,11 @@ sealed interface Work {
     val contentType: String
     val releaseStatus: ReleaseStatus
     val id: Int
-    val originalTitle: String
+    val defaultTitle: String
+    val userPreferredTitle: String
     val numReleases: Int
     val pictureURL: String?
     val pictures: List<String>
-    val userPreferredTitle: String
     val synonyms: List<String>
     val startDate: String?
     val endDate: String?
@@ -67,11 +67,11 @@ data class Anime(
     override val contentType: String = "",
     override val releaseStatus: ReleaseStatus = ReleaseStatus.OTHER,
     override val id: Int,
-    override val originalTitle: String,
+    override val defaultTitle: String,
+    override val userPreferredTitle: String = "",
     override val numReleases: Int = 0,
     override val pictureURL: String?,
     override val pictures: List<String> = emptyList(),
-    override val userPreferredTitle: String = "",
     override val synonyms: List<String> = emptyList(),
     override val startDate: String? = null,
     override val endDate: String? = null,
@@ -109,11 +109,11 @@ data class Manga(
     override val contentType: String = "",
     override val releaseStatus: ReleaseStatus = ReleaseStatus.OTHER,
     override val id: Int,
-    override val originalTitle: String,
+    override val defaultTitle: String,
+    override val userPreferredTitle: String = "",
     override val numReleases: Int = 0,
     override val pictureURL: String?,
     override val pictures: List<String> = emptyList(),
-    override val userPreferredTitle: String = "",
     override val synonyms: List<String> = emptyList(),
     override val startDate: String? = null,
     override val endDate: String? = null,

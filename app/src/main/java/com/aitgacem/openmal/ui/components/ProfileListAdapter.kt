@@ -45,12 +45,12 @@ class ProfileAnimeItemViewHolder(itemView: View, val onClick: (View, Work) -> Un
     }
 
     fun bind(glide: RequestManager, item: Work) {
-        ViewCompat.setTransitionName(currentView, item.originalTitle)
+        ViewCompat.setTransitionName(currentView, item.defaultTitle)
         currentItem = item
         glide
             .load(item.pictureURL)
             .into(imageView)
-        title.text = item.originalTitle
+        title.text = item.userPreferredTitle
 
         val userProgress = item.listStatus?.progressCount ?: 0
         val maximum = item.numReleases

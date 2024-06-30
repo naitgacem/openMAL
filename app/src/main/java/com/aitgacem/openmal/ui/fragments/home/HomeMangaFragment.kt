@@ -86,11 +86,11 @@ class HomeMangaFragment : Fragment() {
 
     private fun goToMangaDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.MANGA, it.pictureURL, it.originalTitle
+            it.id, MediaType.MANGA, it.pictureURL, it.defaultTitle
         )
         findNavController().navigate(
             action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.originalTitle
+                transitionView to it.defaultTitle
             )
         )
     }

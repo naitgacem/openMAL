@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import openmal.domain.ListStatus
@@ -48,6 +48,7 @@ class ProfileViewModel @Inject constructor(
     private var sort = MutableLiveData(SortType.DEFAULT)
 
     private val isNsfwEnabled = prefs.isNsfwEnabledFlow
+    private val preferredTitleStyle = prefs.preferredTitleStyle
 
     init {
         refresh()
@@ -106,8 +107,11 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun refreshIfNeeded() {
+        val combination = combine(isNsfwEnabled, preferredTitleStyle) { _, _ ->
+            //nothing
+        }
         viewModelScope.launch {
-            isNsfwEnabled.distinctUntilChanged().collect { _ ->
+            combination.collect{
                 refresh()
             }
         }

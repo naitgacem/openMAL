@@ -162,7 +162,7 @@ class EditListFragment : Fragment() {
                 is NetworkResult.Success -> {
                     val work = result.data
                     Glide.with(this).load(work.pictureURL).into(binding.workImage)
-                    binding.releaseStatus.text = work.originalTitle
+                    binding.releaseStatus.text = work.userPreferredTitle
 
                     binding.progressTextLayout.suffixText = String.format(
                         getString(R.string.divider),
