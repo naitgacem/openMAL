@@ -54,6 +54,7 @@ class ViewImagesFragment : Fragment() {
             }
 
             override fun onPageScrollStateChanged(state: Int) {
+                // Hack to reset the zoom state after swiping away from a picture
                 if (state == SCROLL_STATE_IDLE) {
                     val recyclerView = pager.children.elementAt(0) as? RecyclerView
                     recyclerView?.children?.forEach { view ->
