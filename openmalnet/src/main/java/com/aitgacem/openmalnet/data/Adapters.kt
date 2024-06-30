@@ -9,6 +9,7 @@ import com.aitgacem.openmalnet.models.MangaForList
 import com.aitgacem.openmalnet.models.MangaForListAllOfMyListStatus
 import com.aitgacem.openmalnet.models.User
 import com.aitgacem.openmalnet.models.UserAllOfAnimeStatistics
+import okhttp3.internal.toImmutableList
 import openmal.domain.Anime
 import openmal.domain.AnimeStudio
 import openmal.domain.ContentRating
@@ -73,10 +74,7 @@ fun MangaForDetails.toDetailsWork(
             id = manga.id,
             defaultTitle = manga.title,
             pictureURL = manga.mainPicture?.medium.toString(),
-            pictures = (listOf(manga.mainPicture?.medium.toString()) + manga.pictures.map { it.medium.toString() })
-                .distinctBy {
-                    it.substringBeforeLast(".")
-                },
+            pictures = pickHighestQualityImages(manga),
             userPreferredTitle = getMangaPreferredTitle(manga, preferredTitleStyle),
             synonyms = manga.alternativeTitles?.synonyms ?: emptyList(),
             contentType = manga.mediaType,
@@ -119,10 +117,7 @@ fun AnimeForDetails.toDetailsWork(
             id = anime.id,
             defaultTitle = anime.title,
             pictureURL = anime.mainPicture?.medium.toString(),
-            pictures = (listOf(anime.mainPicture?.medium.toString()) + anime.pictures.map { it.medium.toString() })
-                .distinctBy {
-                    it.substringBeforeLast(".")
-                },
+            pictures = pickHighestQualityImages(anime),
             userPreferredTitle = getAnimePreferredTitle(anime, preferredTitleStyle),
             synonyms = anime.alternativeTitles?.synonyms ?: emptyList(),
             contentType = anime.mediaType,
@@ -301,13 +296,17 @@ fun MangaForList.toListWork(
     }
 }
 
-fun getAnimePreferredTitle(anime: AnimeForDetails, preferredTitleStyle: PreferredTitleStyle): String {
+fun getAnimePreferredTitle(
+    anime: AnimeForDetails,
+    preferredTitleStyle: PreferredTitleStyle
+): String {
     return when (preferredTitleStyle) {
         PREFER_DEFAULT, PREFER_ROMAJI -> anime.title
         PREFER_ENGLISH -> anime.alternativeTitles?.en.ifNullOrBlank { anime.title }
         PREFER_JAPANESE -> anime.alternativeTitles?.ja.ifNullOrBlank { anime.title }
     }
 }
+
 fun getAnimePreferredTitle(anime: AnimeForList, preferredTitleStyle: PreferredTitleStyle): String {
     return when (preferredTitleStyle) {
         PREFER_DEFAULT, PREFER_ROMAJI -> anime.title
@@ -316,13 +315,17 @@ fun getAnimePreferredTitle(anime: AnimeForList, preferredTitleStyle: PreferredTi
     }
 }
 
-fun getMangaPreferredTitle(manga: MangaForDetails, preferredTitleStyle: PreferredTitleStyle): String {
+fun getMangaPreferredTitle(
+    manga: MangaForDetails,
+    preferredTitleStyle: PreferredTitleStyle
+): String {
     return when (preferredTitleStyle) {
         PREFER_DEFAULT, PREFER_ROMAJI -> manga.title
         PREFER_ENGLISH -> manga.alternativeTitles?.en.ifNullOrBlank { manga.title }
         PREFER_JAPANESE -> manga.alternativeTitles?.ja.ifNullOrBlank { manga.title }
     }
 }
+
 fun getMangaPreferredTitle(manga: MangaForList, preferredTitleStyle: PreferredTitleStyle): String {
     return when (preferredTitleStyle) {
         PREFER_DEFAULT, PREFER_ROMAJI -> manga.title
@@ -330,10 +333,41 @@ fun getMangaPreferredTitle(manga: MangaForList, preferredTitleStyle: PreferredTi
         PREFER_JAPANESE -> manga.alternativeTitles?.ja.ifNullOrBlank { manga.title }
     }
 }
+
 private fun String?.ifNullOrBlank(other: () -> String): String {
     return if (this.isNullOrBlank()) {
         other()
     } else {
         this
     }
+}
+
+private fun <T> T?.ifNull(other: () -> T): T {
+    return this ?: other()
+}
+
+private fun pickHighestQualityImages(anime: AnimeForDetails): List<String> {
+    val list = mutableListOf(anime.mainPicture?.large.ifNull { anime.mainPicture?.medium })
+    list.addAll(
+        anime.pictures.map { (it.large.ifNull { it.medium }) }
+    )
+    return list.map {
+        it.toString()
+    }.distinctBy {
+        it.substringBeforeLast(".")
+    }
+        .toImmutableList()
+}
+
+private fun pickHighestQualityImages(manga: MangaForDetails): List<String> {
+    val list = mutableListOf(manga.mainPicture?.large.ifNull { manga.mainPicture?.medium })
+    list.addAll(
+        manga.pictures.map { (it.large.ifNull { it.medium }) }
+    )
+    return list.map {
+        it.toString()
+    }.distinctBy {
+        it.substringBeforeLast(".")
+    }
+        .toImmutableList()
 }

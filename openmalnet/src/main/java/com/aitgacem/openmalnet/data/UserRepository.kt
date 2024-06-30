@@ -138,8 +138,8 @@ class UserRepository @Inject constructor(
         }
     }
 
-    private val animeFields = "my_list_status,num_episodes,alternative_titles"
-    private val mangaFields =  "my_list_status,num_chapters,alternative_titles"
+    private val animeFields = "list_status,num_episodes,alternative_titles"
+    private val mangaFields =  "list_status,num_chapters,alternative_titles"
     suspend fun getUserAnimeList(
         status: ListStatus = ListStatus.NON_EXISTENT,
         sort: SortType = SortType.DEFAULT,
