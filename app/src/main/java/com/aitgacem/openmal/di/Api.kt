@@ -2,8 +2,9 @@ package com.aitgacem.openmal.di
 
 import android.content.Context
 import com.aitgacem.openmal.R
-import com.aitgacem.openmal.data.UserPreferencesRepository
+
 import com.aitgacem.openmalnet.api.mal.AuthHandler
+import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.refreshToken
 import dagger.Module
 import dagger.Provides

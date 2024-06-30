@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aitgacem.openmal.data.UserPreferencesRepository
+import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val prefs: UserPreferencesRepository,
-    val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val mediaType =
         savedStateHandle.get<MediaType>("type") ?: throw IllegalStateException("Type not found")
@@ -67,8 +67,7 @@ class ProfileViewModel @Inject constructor(
 
                 MediaType.MANGA -> {
                     userRepository.getUserMangaList(
-                        status = _filter.value!!,
-                        sort = sort.value!!,
+                        status = _filter.value!!, sort = sort.value!!, nsfw = nsfw,
                     )
                 }
             }

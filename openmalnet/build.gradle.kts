@@ -38,6 +38,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.datastore.preferences)
    // implementation(libs.androidx.appcompat)
    // implementation(libs.material)
     implementation(libs.gson)

@@ -1,22 +1,16 @@
 package com.aitgacem.openmal
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.aitgacem.openmal.data.UserPreferencesRepository
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
-import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
+import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import openmal.domain.MediaType
 import javax.inject.Inject
 
 @AndroidEntryPoint

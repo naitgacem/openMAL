@@ -11,7 +11,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.aitgacem.openmal.data.UserPreferencesRepository
+import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.getToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

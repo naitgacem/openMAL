@@ -5,9 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import com.aitgacem.openmal.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.AnimeRepository
 import com.aitgacem.openmalnet.data.MangaRepository
+import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch

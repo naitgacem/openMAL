@@ -1,4 +1,4 @@
-package com.aitgacem.openmal.di
+package com.aitgacem.openmalnet.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+
 
 private const val USER_PREFERENCES_NAME = "user_preferences"
 private val Context.dataStore by preferencesDataStore(
