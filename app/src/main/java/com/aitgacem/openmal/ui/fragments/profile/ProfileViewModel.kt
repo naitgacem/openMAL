@@ -62,13 +62,13 @@ class ProfileViewModel @Inject constructor(
             val userList = when (mediaType) {
                 MediaType.ANIME -> {
                     userRepository.getUserAnimeList(
-                        status = _filter.value!!, sort = sort.value!!, nsfw = nsfw
+                        status = _filter.value!!, sort = sort.value!!
                     )
                 }
 
                 MediaType.MANGA -> {
                     userRepository.getUserMangaList(
-                        status = _filter.value!!, sort = sort.value!!, nsfw = nsfw,
+                        status = _filter.value!!, sort = sort.value!!
                     )
                 }
             }

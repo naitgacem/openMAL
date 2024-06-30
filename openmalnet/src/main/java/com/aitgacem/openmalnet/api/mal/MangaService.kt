@@ -16,6 +16,7 @@ interface MangaService {
         @Query("limit")limit: Int?,
         @Query("offset")offset: Int?,
         @Query("fields")fields: String?,
+        @Query("nsfw") nsfw: Boolean = false
     ) : Response<MangaListForRanking>
 
     @GET("manga/{manga_id}")
@@ -29,5 +30,6 @@ interface MangaService {
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
         @Query("fields") fields: String? = null,
+        @Query("nsfw") nsfw: Boolean = false
     ): Response<MangaList>
 }

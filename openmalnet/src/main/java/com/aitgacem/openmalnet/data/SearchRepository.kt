@@ -23,10 +23,11 @@ class SearchRepository @Inject constructor(
     ): NetworkResult<List<Work>> {
         val preferredTitleStyle =
             prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
+        val nsfw = prefs.isNsfwEnabledFlow.firstOrNull() ?: false
         val animeResults: NetworkResult<AnimeList> =
-            handleApi { animeService.getAnimeList(query, limit, offset, searchFields) }
+            handleApi { animeService.getAnimeList(query, limit, offset, searchFields, nsfw = nsfw) }
         val mangaResults: NetworkResult<MangaList> =
-            handleApi { mangaService.getMangaList(query, limit, offset, searchFields) }
+            handleApi { mangaService.getMangaList(query, limit, offset, searchFields, nsfw = nsfw) }
         val result = mutableListOf<Work>()
         // When they both return an exception
         if (animeResults is NetworkResult.Exception && mangaResults is NetworkResult.Exception) {

@@ -143,8 +143,8 @@ class UserRepository @Inject constructor(
     suspend fun getUserAnimeList(
         status: ListStatus = ListStatus.NON_EXISTENT,
         sort: SortType = SortType.DEFAULT,
-        nsfw: Boolean = false,
     ): NetworkResult<List<Work>> {
+        val nsfw = prefs.isNsfwEnabledFlow.firstOrNull() ?: false
         val result = handleApi {
             userService.getUserAnimeList(
                 username = "@me",
@@ -199,8 +199,8 @@ class UserRepository @Inject constructor(
     suspend fun getUserMangaList(
         status: ListStatus = ListStatus.NON_EXISTENT,
         sort: SortType = SortType.DEFAULT,
-        nsfw: Boolean = false,
     ): NetworkResult<List<Work>> {
+        val nsfw = prefs.isNsfwEnabledFlow.firstOrNull() ?: false
         val result = handleApi {
             userService.getUserMangaList(
                 username = "@me",

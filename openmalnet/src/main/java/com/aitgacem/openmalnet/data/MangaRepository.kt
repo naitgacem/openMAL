@@ -28,9 +28,10 @@ class MangaRepository @Inject constructor(
 
     private suspend fun getRankingManga(rankingType: String): NetworkResult<List<Work>> {
         val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
+        val nsfw = prefs.isNsfwEnabledFlow.firstOrNull() ?: false
         val result: NetworkResult<MangaListForRanking> = handleApi {
             mangaService.getMangaRanking(
-                rankingType = rankingType, limit = 50, offset = 0, fields = listFields
+                rankingType = rankingType, limit = 50, offset = 0, fields = listFields, nsfw = nsfw
             )
         }
         return when (result) {

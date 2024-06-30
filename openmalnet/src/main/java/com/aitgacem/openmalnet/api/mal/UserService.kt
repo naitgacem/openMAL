@@ -70,7 +70,7 @@ interface UserService {
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
         @Query("fields") fields: String?,
-        @Query("nsfw") nsfw: Boolean = true
+        @Query("nsfw") nsfw: Boolean = false
     ): Response<UserAnimeList>
 
     @GET("users/{user_name}/mangalist")
@@ -81,7 +81,7 @@ interface UserService {
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null,
         @Query("fields") fields: String?,
-        @Query("nsfw") nsfw: Boolean = true
+        @Query("nsfw") nsfw: Boolean = false
     ): Response<UserMangaList>
 
     @GET("users/{user_name}")
