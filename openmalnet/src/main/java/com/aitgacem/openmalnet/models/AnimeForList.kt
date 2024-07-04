@@ -3,9 +3,9 @@ package com.aitgacem.openmalnet.models
 import com.google.gson.annotations.SerializedName
 
 data class AnimeForList(
-    @SerializedName("id") override val id: Int,
+    @SerializedName("id")  val id: Int,
     @SerializedName("title") val title: String,
-    @SerializedName("main_picture") override val mainPicture: WorkBaseMainPicture? = null,
+    @SerializedName("main_picture")  val mainPicture: WorkBaseMainPicture? = null,
     @SerializedName("alternative_titles") val alternativeTitles: WorkForListAllOfAlternativeTitles? = null,
     @SerializedName("start_date") val startDate: String? = null,
     @SerializedName("end_date") val endDate: String? = null,
@@ -29,12 +29,4 @@ data class AnimeForList(
     @SerializedName("average_episode_duration") val averageEpisodeDuration: Int? = null,
     @SerializedName("rating") val rating: String? = null,
     @SerializedName("studios") val studios: List<AnimeStudio>,
-    override val type: String = "Anime"
-) : ItemForList {
-    override val originalTitle
-        get() = this.title
-    override val displayTitle: String
-        get() = if(alternativeTitles?.en?.isNotEmpty() == true) alternativeTitles.en else title
-    override val synonyms
-        get() = alternativeTitles?.synonyms ?: emptyList<String?>()
-}
+)
