@@ -425,6 +425,7 @@ class DetailFragment : Fragment() {
             binding.progressText.hide()
             binding.addToLibBtn.text = resources.getString(R.string.add)
             binding.rateBtn.text = resources.getString(R.string.rate)
+            binding.floatingActionButton.hide()
         } else {
             // Show status and progress ..
             binding.addToLibBtn.hide()

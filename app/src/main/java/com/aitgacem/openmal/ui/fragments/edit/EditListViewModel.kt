@@ -99,7 +99,13 @@ class EditListViewModel @Inject constructor(
             } catch (e: Exception) {
                 null
             }
+        }
+    }
 
+    fun markProgressFinished() {
+        val total = (_work.value as? NetworkResult.Success<Work>)?.data?.numReleases
+        if (total != null && total > 0) {
+            progressCount = total
         }
     }
 

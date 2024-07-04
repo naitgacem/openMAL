@@ -77,7 +77,7 @@ class EditListFragment : Fragment() {
             }
         }
         // fill the chip group with progress status, watching, reading ...
-        ListStatus.entries.filter { it != ListStatus.NON_EXISTENT }.forEach { status ->
+        ListStatus.entries.filterNot { it == ListStatus.NON_EXISTENT }.forEach { status ->
             val chip = Chip(requireContext()).apply {
                 height = ActionBar.LayoutParams.MATCH_PARENT
                 width = ActionBar.LayoutParams.WRAP_CONTENT
@@ -120,6 +120,12 @@ class EditListFragment : Fragment() {
                 val status = map.filterValues { id ->
                     checkedId == id
                 }.keys.firstOrNull()
+                if(status != null){
+                    viewModel.updateStatus(status)
+                    if(status == ListStatus.COMPLETED){
+                        viewModel.markProgressFinished()
+                    }
+                }
                 viewModel.updateStatus(status ?: ListStatus.NON_EXISTENT)
             }
         }
