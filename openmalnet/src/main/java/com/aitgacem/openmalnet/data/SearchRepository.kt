@@ -2,8 +2,6 @@ package com.aitgacem.openmalnet.data
 
 import com.aitgacem.openmalnet.api.mal.AnimeService
 import com.aitgacem.openmalnet.api.mal.MangaService
-import com.aitgacem.openmalnet.models.AnimeList
-import com.aitgacem.openmalnet.models.MangaList
 import kotlinx.coroutines.flow.firstOrNull
 import openmal.domain.NetworkResult
 import openmal.domain.PreferredTitleStyle
@@ -15,8 +13,8 @@ class SearchRepository @Inject constructor(
     private val mangaService: MangaService,
     private val prefs: UserPreferencesRepository,
 ) {
-    private val searchFields = "alternative_titles,mean"
-    suspend fun search(
+    private val searchFields = "alternative_titles,mean,start_date"
+    suspend fun searchAll(
         query: String,
         limit: Int? = null,
         offset: Int? = null,
@@ -24,9 +22,9 @@ class SearchRepository @Inject constructor(
         val preferredTitleStyle =
             prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         val nsfw = prefs.isNsfwEnabledFlow.firstOrNull() ?: false
-        val animeResults: NetworkResult<AnimeList> =
+        val animeResults =
             handleApi { animeService.getAnimeList(query, limit, offset, searchFields, nsfw = nsfw) }
-        val mangaResults: NetworkResult<MangaList> =
+        val mangaResults =
             handleApi { mangaService.getMangaList(query, limit, offset, searchFields, nsfw = nsfw) }
         val result = mutableListOf<Work>()
         // When they both return an exception
@@ -47,6 +45,7 @@ class SearchRepository @Inject constructor(
             result.addAll(animeResults.data.data.map { it.node }
                 .map { it.toListWork(preferredTitleStyle) })
         }
-        return NetworkResult.Success(result.sortedByDescending { it.meanScore })
+        return NetworkResult.Success(result)
     }
+
 }

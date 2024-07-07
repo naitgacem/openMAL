@@ -190,4 +190,7 @@
     <string name="preferred_title_language">Preferred work title language</string>
     <string name="default_style">Default style</string>
     <string name="romaji">Romaji</string>
+    <string name="search_default_order">Default order</string>
+    <string name="search_score_order">Order by score</string>
+    <string name="search_airing_date_order">Airing date</string>
 </resources>

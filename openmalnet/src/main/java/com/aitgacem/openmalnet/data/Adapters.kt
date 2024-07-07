@@ -61,6 +61,7 @@ fun AnimeForList.toListWork(
             synonyms = anime.alternativeTitles?.synonyms ?: emptyList(),
             meanScore = anime.mean,
             listStatus = anime.myListStatus?.toUserList(),
+            startDate = anime.startDate,
         )
     }
 }
@@ -291,7 +292,8 @@ fun MangaForList.toListWork(
             userPreferredTitle = getMangaPreferredTitle(manga, preferredTitleStyle),
             synonyms = manga.alternativeTitles?.synonyms ?: emptyList(),
             meanScore = manga.mean,
-            listStatus = manga.myListStatus?.toUserList()
+            listStatus = manga.myListStatus?.toUserList(),
+            startDate = manga.startDate,
         )
     }
 }

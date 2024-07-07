@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
+import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -18,6 +22,7 @@ import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.bumptech.glide.Glide
 import openmal.domain.MediaType
 import openmal.domain.NetworkResult
+import openmal.domain.SortType
 import openmal.domain.Work
 
 class SearchFragment : Fragment() {
@@ -35,6 +40,9 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, true) {
+            resetAndBack()
+        }
         val glide = Glide.with(this)
         val rv = binding.recyclerView
         val adapter = SearchResultsAdapter(glide, ::goToAnimeDetail, ::goToMangaDetail)
@@ -49,11 +57,7 @@ class SearchFragment : Fragment() {
                 }
             }
         }
-
-        binding.searchBar.setNavigationOnClickListener {
-            viewModel.reset()
-            findNavController().popBackStack()
-        }
+        binding.searchBar.setNavigationOnClickListener(::resetAndBack)
         binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
             viewModel.updateSearchTerm(text.toString())
         }
@@ -64,7 +68,53 @@ class SearchFragment : Fragment() {
             viewModel.doSearch(text.toString())
             false
         }
-        val suggestionsAdapter = SearchSuggestionsAdapter(Glide.with(this)){title ->
+
+        // Sorting and filtering--------
+        val sortOrders = arrayOf(
+            SortType.DEFAULT to getString(R.string.search_default_order),
+            SortType.SCORE to getString(R.string.score),
+            SortType.START_DATE to getString(R.string.air_date),
+        )
+        val arrayAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            sortOrders.map { it.second }).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+        binding.spinner.adapter = arrayAdapter
+
+        binding.spinner.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val item = parent?.getItemAtPosition(position) as? String
+                for (sort in sortOrders) {
+                    if (sort.second == item) {
+                        viewModel.updateSortOrder(sort.first)
+                    }
+                }
+
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                viewModel.updateSortOrder(SortType.DEFAULT)
+            }
+        }
+
+        binding.filterWorkType.setOnCheckedStateChangeListener { chipGroup, _ ->
+            when (chipGroup.checkedChipId) {
+                R.id.anime -> viewModel.updateTypeFilter(SearchViewModel.SearchTypeFilter.ANIME)
+                R.id.manga -> viewModel.updateTypeFilter(SearchViewModel.SearchTypeFilter.MANGA)
+                else -> viewModel.updateTypeFilter(SearchViewModel.SearchTypeFilter.ALL)
+            }
+        }
+
+        // Suggestions----------
+        val suggestionsAdapter = SearchSuggestionsAdapter(Glide.with(this)) { title ->
             binding.searchBar.setText(title)
             binding.searchView.hide()
             viewModel.doSearch(title)
@@ -92,6 +142,7 @@ class SearchFragment : Fragment() {
             )
         )
     }
+
     private fun goToMangaDetail(transitionView: View, it: Work) {
         val action = DetailFragmentDirections.gotoDetail(
             it.id, MediaType.MANGA, it.pictureURL, it.defaultTitle
@@ -102,4 +153,9 @@ class SearchFragment : Fragment() {
             )
         )
     }
+    private fun resetAndBack(view: View? = null){
+        viewModel.reset()
+        findNavController().popBackStack()
+    }
+
 }
