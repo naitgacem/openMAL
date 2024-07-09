@@ -11,15 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.viewmodel.MutableCreationExtras
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.aitgacem.openmal.databinding.FragmentSeasonalContentBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.Season
 import openmal.domain.Work
@@ -53,7 +51,11 @@ class SeasonContent() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val glide = Glide.with(this)
-        binding.gridRv.adapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        binding.gridRv.adapter = HorizontalListAdapter(glide){ transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
+        }
         binding.gridRv.layoutManager =
             GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
 
@@ -72,17 +74,6 @@ class SeasonContent() : Fragment() {
             }
         }
 
-    }
-
-    private fun goToAnimeDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id,  MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
     }
 
 

@@ -38,10 +38,10 @@ import com.aitgacem.openmal.ui.convertDateToLong
 import com.aitgacem.openmal.ui.fragments.edit.EditListFragmentDirections
 import com.aitgacem.openmal.ui.fragments.edit.EditListViewModel
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -92,6 +92,7 @@ class DetailFragment : Fragment() {
         if (shouldRefresh == true) {
             viewModel.refresh()
         }
+
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             val url = String.format(
                 getString(
@@ -170,7 +171,14 @@ class DetailFragment : Fragment() {
         binding.topAppBar.setNavigationOnClickListener { findNavController().popBackStack() }
         viewModel.state.observe(viewLifecycleOwner) { networkResult ->
             when (networkResult) {
-                is NetworkResult.Success -> displayWorkInfo(networkResult.data)
+                is NetworkResult.Success -> displayWorkInfo(
+                    networkResult.data
+                ) { transitionView: View, work: Work ->
+                    gotoWorkDetail(
+                        findNavController(), transitionView, work
+                    )
+                }
+
                 is NetworkResult.Error -> {
                     val errorMessage = getString(
                         when (networkResult.apiError) {
@@ -207,18 +215,15 @@ class DetailFragment : Fragment() {
     }
 
 
-    private fun displayWorkInfo(work: Work) {
+    private fun displayWorkInfo(work: Work, gotoWorkDetail: (View, Work) -> Unit) {
         with(binding) {
             // redundantly load image and title for deep links handling
             Glide.with(this@DetailFragment).load(work.pictureURL).into(workImage)
             workTitle.text = work.userPreferredTitle
 
             workImage.setOnClickListener {
-                val extras = FragmentNavigatorExtras(
-                    binding.workImage to work.defaultTitle
-                )
                 val action = DetailFragmentDirections.viewImages(work.pictures.toTypedArray())
-                findNavController().navigate(action, extras)
+                findNavController().navigate(action)
             }
 
             topAppBar.menu[1].setIcon(
@@ -292,10 +297,11 @@ class DetailFragment : Fragment() {
                     title.text = edge.userPreferredTitle
                     relationType.text = relation
 
-                    horizontalChip.transitionName = edge.userPreferredTitle // Shared element transition
+                    horizontalChip.transitionName =
+                        edge.userPreferredTitle // Shared element transition
                     binding.relatedWork.addView(horizontalChip)
                     horizontalChip.setOnClickListener {
-                        goToAnimeDetail(it, edge)
+                        gotoWorkDetail(it, edge)
                     }
                 }
             }
@@ -463,7 +469,7 @@ class DetailFragment : Fragment() {
             binding.progressText.show()
             showFloatingButton(
                 getString(R.string.edit_list), R.drawable.ic_edit, requireContext().theme
-            ){ view ->
+            ) { view ->
                 gotoEditList(view)
                 binding.floatingActionButton.hide()
             }
@@ -522,17 +528,6 @@ class DetailFragment : Fragment() {
             args.id, args.imageUrl ?: "", args.workTitle ?: "", args.mediaType
         )
         findNavController().navigate(action)
-    }
-
-    private fun goToAnimeDetail(transitionView: View, work: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            work.id, args.mediaType, work.pictureURL ?: "", work.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to work.defaultTitle
-            )
-        )
     }
 
     private suspend fun saveAndToast(

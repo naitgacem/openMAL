@@ -11,16 +11,14 @@ import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentSearchBinding
 import com.aitgacem.openmal.ui.components.SearchResultsAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
-import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.SortType
 import openmal.domain.Work
@@ -45,7 +43,11 @@ class SearchFragment : Fragment() {
         }
         val glide = Glide.with(this)
         val rv = binding.recyclerView
-        val adapter = SearchResultsAdapter(glide, ::goToAnimeDetail, ::goToMangaDetail)
+        val adapter = SearchResultsAdapter(glide) { transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
+        }
 
         rv.layoutManager = LinearLayoutManager(requireContext())
         rv.adapter = adapter
@@ -132,28 +134,8 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun goToAnimeDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
 
-    private fun goToMangaDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.MANGA, it.pictureURL, it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
-    private fun resetAndBack(view: View? = null){
+    private fun resetAndBack(view: View? = null) {
         viewModel.reset()
         findNavController().popBackStack()
     }

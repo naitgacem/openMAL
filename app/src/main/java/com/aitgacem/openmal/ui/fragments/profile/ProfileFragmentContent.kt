@@ -16,15 +16,14 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewmodel.MutableCreationExtras
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentProfileContentBinding
 import com.aitgacem.openmal.ui.components.ProfileListAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.aitgacem.openmal.ui.fragments.login.LoginPromptFragmentDirections
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -76,9 +75,10 @@ class ProfileFragmentContent() : Fragment() {
         }
 
         val glide = Glide.with(this)
-        val adapter = when (viewmodel.mediaType) {
-            MediaType.ANIME -> ProfileListAdapter(glide, ::goToAnimeDetail)
-            MediaType.MANGA -> ProfileListAdapter(glide, ::goToMangaDetail)
+        val adapter = ProfileListAdapter(glide){ transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
         }
         val rv = binding.recyclerview
         rv.adapter = adapter
@@ -233,16 +233,6 @@ class ProfileFragmentContent() : Fragment() {
         }
     }
 
-    private fun goToAnimeDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
 
     private fun generateAnimeHeader(
         filter: ListStatus,
@@ -276,16 +266,6 @@ class ProfileFragmentContent() : Fragment() {
         )
     }
 
-    private fun goToMangaDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id,  MediaType.MANGA, it.pictureURL, it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
 
     private fun generateMangaHeader(
         filter: ListStatus,

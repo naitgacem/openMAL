@@ -17,27 +17,14 @@ import openmal.domain.Work
 
 class SearchResultsAdapter(
     private val glide: RequestManager,
-    private val gotoAnimeDetail: (View, Work) -> Unit,
-    private val gotoMangaDetail: (View, Work) -> Unit,
+    private val gotoWorkDetail: (View, Work) -> Unit,
 ) :
     ListAdapter<Work, SearchResultViewHolder>(WorkDiffCallBack) {
-
-    override fun getItemViewType(position: Int): Int {
-        val work = getItem(position)
-        return when(work){
-            is Anime -> MediaType.ANIME.ordinal
-            is Manga -> MediaType.MANGA.ordinal
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.anime_horizontal_card, parent, false)
-        return when(viewType) {
-            MediaType.ANIME.ordinal -> SearchResultViewHolder(view, gotoAnimeDetail)
-            MediaType.MANGA.ordinal -> SearchResultViewHolder(view, gotoMangaDetail)
-            else -> throw IllegalStateException("Unknown view type")
-        }
+        return SearchResultViewHolder(view, gotoWorkDetail)
     }
 
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {

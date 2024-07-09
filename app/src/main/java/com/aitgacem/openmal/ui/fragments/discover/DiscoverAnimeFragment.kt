@@ -7,18 +7,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentLinearLayoutBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.setupSection
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.ApiError
-import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.Work
 
@@ -41,7 +39,12 @@ class DiscoverAnimeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val glide = Glide.with(this)
-        val popularAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        val gotoAnimeDetail = { transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
+        }
+        val popularAnimeAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
         viewModel.topPopularAnime.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> popularAnimeAdapter.submitList(result.data)
@@ -49,7 +52,7 @@ class DiscoverAnimeFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val upcomingAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        val upcomingAnimeAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
         viewModel.upcomingAnime.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> upcomingAnimeAdapter.submitList(result.data)
@@ -59,7 +62,7 @@ class DiscoverAnimeFragment : Fragment() {
         }
         loginViewModel.isLoggedIn.observe(viewLifecycleOwner) { isLogged ->
             if (isLogged) {
-                val suggestedAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+                val suggestedAnimeAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
                 setupSection(
                     requireContext(),
                     binding.thirdTitle,
@@ -91,17 +94,6 @@ class DiscoverAnimeFragment : Fragment() {
             binding.secondRv,
             getString(R.string.top_upcoming_anime),
             upcomingAnimeAdapter
-        )
-    }
-
-    private fun goToAnimeDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
         )
     }
 

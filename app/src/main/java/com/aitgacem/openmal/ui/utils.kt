@@ -1,11 +1,16 @@
 package com.aitgacem.openmal.ui
 
 import android.content.Context
+import android.view.View
 import android.widget.TextView
+import androidx.navigation.NavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
+import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
 import com.google.android.material.datepicker.MaterialDatePicker
+import openmal.domain.Work
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,4 +50,15 @@ fun convertDateToLong(dateString: String): Long {
         }
     }
     return MaterialDatePicker.todayInUtcMilliseconds()
+}
+
+fun gotoWorkDetail(controller: NavController, transitionView: View, work: Work){
+    val action = DetailFragmentDirections.gotoDetail(
+        work.id, work.mediaType, work.pictureURL ?: "", work.defaultTitle
+    )
+    controller.navigate(
+        action, navigatorExtras = FragmentNavigatorExtras(
+            transitionView to work.defaultTitle
+        )
+    )
 }

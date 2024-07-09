@@ -7,17 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentLinearLayoutBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.setupSection
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.ApiError
-import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.Work
 
@@ -37,7 +35,12 @@ class HomeMangaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val glide = Glide.with(this)
-        val topMangaAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
+        val goToMangaDetail = { transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
+        }
+        val topMangaAdapter = HorizontalListAdapter(glide, goToMangaDetail)
         viewModel.topManga.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topMangaAdapter.submitList(result.data)
@@ -45,7 +48,7 @@ class HomeMangaFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topNovelsAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
+        val topNovelsAdapter = HorizontalListAdapter(glide, goToMangaDetail)
         viewModel.topNovels.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topNovelsAdapter.submitList(result.data)
@@ -53,7 +56,7 @@ class HomeMangaFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topOneShotAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
+        val topOneShotAdapter = HorizontalListAdapter(glide, goToMangaDetail)
         viewModel.topOneShots.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topOneShotAdapter.submitList(result.data)
@@ -84,16 +87,6 @@ class HomeMangaFragment : Fragment() {
         )
     }
 
-    private fun goToMangaDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id, MediaType.MANGA, it.pictureURL, it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
 
     private fun onError(apiError: ApiError) {
         val message = getString(

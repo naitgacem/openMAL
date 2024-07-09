@@ -7,17 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentLinearLayoutBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.setupSection
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.ApiError
-import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.Work
 
@@ -37,8 +35,12 @@ class HomeAnimeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val glide = Glide.with(this)
-
-        val topAiringAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        val gotoAnimeDetail = { transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
+        }
+        val topAiringAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
 
         viewModel.topAiringAnime.observe(viewLifecycleOwner) {result ->
             when (result) {
@@ -47,7 +49,7 @@ class HomeAnimeFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topAnimeAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        val topAnimeAdapter = HorizontalListAdapter(glide,gotoAnimeDetail)
         viewModel.topAnime.observe(viewLifecycleOwner) {result ->
             when (result) {
                 is NetworkResult.Success -> topAnimeAdapter.submitList(result.data)
@@ -55,7 +57,7 @@ class HomeAnimeFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topSpecialAdapter = HorizontalListAdapter(glide, ::goToAnimeDetail)
+        val topSpecialAdapter = HorizontalListAdapter(glide,gotoAnimeDetail)
         viewModel.topSpecial.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topSpecialAdapter.submitList(result.data)
@@ -68,16 +70,6 @@ class HomeAnimeFragment : Fragment() {
         setupSection(requireContext(), binding.thirdTitle, binding.thirdRv, getString(R.string.top_anime_specials), topSpecialAdapter)
     }
 
-    private fun goToAnimeDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id,  MediaType.ANIME, it.pictureURL ?: "", it.defaultTitle
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
 
     private fun onError(apiError: ApiError) {
         val message = getString(

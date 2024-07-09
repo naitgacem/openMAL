@@ -7,17 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentLinearLayoutBinding
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
-import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
+import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.setupSection
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.ApiError
-import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.Work
 
@@ -40,7 +38,12 @@ class DiscoverMangaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val glide = Glide.with(this)
-        val popularMangaAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
+        val gotoMangaDetail = {transitionView: View, work: Work ->
+            gotoWorkDetail(
+                findNavController(), transitionView, work
+            )
+        }
+        val popularMangaAdapter = HorizontalListAdapter(glide, gotoMangaDetail)
         viewModel.topPopularManga.observe(viewLifecycleOwner) {result ->
             when (result) {
                 is NetworkResult.Success -> popularMangaAdapter.submitList(result.data)
@@ -48,7 +51,7 @@ class DiscoverMangaFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val favMangaAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
+        val favMangaAdapter = HorizontalListAdapter(glide, gotoMangaDetail)
         viewModel.mostFavouritedManga.observe(viewLifecycleOwner) {result ->
             when (result) {
                 is NetworkResult.Success -> favMangaAdapter.submitList(result.data)
@@ -56,7 +59,7 @@ class DiscoverMangaFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topDoujinAdapter = HorizontalListAdapter(glide, ::goToMangaDetail)
+        val topDoujinAdapter = HorizontalListAdapter(glide, gotoMangaDetail)
         viewModel.topDoujin.observe(viewLifecycleOwner) {result ->
             when (result) {
                 is NetworkResult.Success -> topDoujinAdapter.submitList(result.data)
@@ -70,16 +73,6 @@ class DiscoverMangaFragment : Fragment() {
         setupSection(requireContext(),binding.thirdTitle, binding.thirdRv, getString(R.string.top_doujin), topDoujinAdapter)
     }
 
-    private fun goToMangaDetail(transitionView: View, it: Work) {
-        val action = DetailFragmentDirections.gotoDetail(
-            it.id,  MediaType.MANGA, it.pictureURL, it.defaultTitle,
-        )
-        findNavController().navigate(
-            action, navigatorExtras = FragmentNavigatorExtras(
-                transitionView to it.defaultTitle
-            )
-        )
-    }
     private fun onException() {
         Toast.makeText(requireContext(), getString(R.string.check_internet), Toast.LENGTH_SHORT)
             .show()
