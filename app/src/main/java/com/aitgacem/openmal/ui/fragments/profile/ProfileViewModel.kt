@@ -58,7 +58,6 @@ class ProfileViewModel @Inject constructor(
 
     private fun loadUserWorkList() {
         viewModelScope.launch {
-            val nsfw = isNsfwEnabled.firstOrNull() ?: false
             val userList = when (mediaType) {
                 MediaType.ANIME -> {
                     userRepository.getUserAnimeList(

@@ -55,7 +55,7 @@ object RetrofitModule {
         return OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = HttpLoggingInterceptor.Level.BASIC
             })
             .authenticator(TokenAuthenticator(authHandler))
             .build()
