@@ -1,7 +1,6 @@
 package com.aitgacem.openmal.ui.fragments.profile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -58,9 +57,7 @@ class ProfileFragmentContent() : Fragment() {
     private val loginViewModel: LoginViewModel by hiltNavGraphViewModels(R.id.main_nav)
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentProfileContentBinding.inflate(inflater, container, false)
         return binding.root
@@ -74,16 +71,25 @@ class ProfileFragmentContent() : Fragment() {
                 findNavController().navigate(action)
             }
         }
+        var shouldShowScrim = false
         viewmodel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.loadingScreen.visibility = if (isLoading) VISIBLE else GONE
+            if (isLoading) {
+                if (shouldShowScrim) binding.scrim.visibility = VISIBLE
+                binding.loadingScreen.visibility = VISIBLE
+            } else {
+                binding.scrim.visibility = GONE
+                binding.loadingScreen.visibility = GONE
+            }
         }
 
         val glide = Glide.with(this)
-        val adapter = ProfileListAdapter(glide) { transitionView: View, work: Work ->
+        val adapter = ProfileListAdapter(glide, onClick = { transitionView: View, work: Work ->
             gotoWorkDetail(
                 findNavController(), transitionView, work
             )
-        }
+        }, onListChange = { _, currList ->
+            shouldShowScrim = currList.isNotEmpty() // Disable the scrim when the list is empty, looks odd
+        })
 
         viewmodel.workList.observe(viewLifecycleOwner) { result ->
             displayList(result, adapter)
@@ -124,10 +130,10 @@ class ProfileFragmentContent() : Fragment() {
             val modalBottomSheet = ModalBottomSheet(viewmodel.mediaType)
             modalBottomSheet.show(childFragmentManager, ModalBottomSheet.TAG)
         }
-        val headerAdapter = ProfileHeaderAdapter(
-            mediaType = viewmodel.mediaType,
+        val headerAdapter = ProfileHeaderAdapter(mediaType = viewmodel.mediaType,
             onStateSelected = { listStatus ->
                 viewmodel.changeFilter(listStatus)
+                viewmodel.setLoading(true)
             },
             activeState = viewmodel.filter.value ?: ListStatus.NON_EXISTENT,
             onFilterButtonClicked = onFilterButtonClicked,
@@ -135,8 +141,7 @@ class ProfileFragmentContent() : Fragment() {
                 headerLiveData.observe(viewLifecycleOwner) { title: String ->
                     textView.text = title
                 }
-            }
-        )
+            })
         val concat = ConcatAdapter(headerAdapter, adapter)
         val rv = binding.recyclerview
         rv.layoutManager = LinearLayoutManager(requireContext())
@@ -173,8 +178,7 @@ class ProfileFragmentContent() : Fragment() {
     }
 
     private fun displayList(
-        result: NetworkResult<List<Work>>?,
-        adapter: ProfileListAdapter
+        result: NetworkResult<List<Work>>?, adapter: ProfileListAdapter
     ) {
         when (result) {
             is NetworkResult.Success -> {
@@ -185,14 +189,13 @@ class ProfileFragmentContent() : Fragment() {
 
             else -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(R.string.check_internet),
-                    Toast.LENGTH_SHORT
+                    requireContext(), getString(R.string.check_internet), Toast.LENGTH_SHORT
                 ).show()
                 viewmodel.setLoading(false)
                 binding.refreshLayout.root.visibility = VISIBLE
                 binding.refreshLayout.refreshBtn.setOnClickListener {
                     viewmodel.refresh()
+                    viewmodel.setLoading(true)
                     binding.refreshLayout.root.visibility = GONE
                 }
             }
@@ -201,9 +204,7 @@ class ProfileFragmentContent() : Fragment() {
 
 
     private fun generateAnimeHeader(
-        filter: ListStatus,
-        stats: Map<ListStatus, Int>?,
-        numEpisodesTotal: Int
+        filter: ListStatus, stats: Map<ListStatus, Int>?, numEpisodesTotal: Int
     ): String {
         val type = getString(
             when (filter) {
@@ -226,9 +227,7 @@ class ProfileFragmentContent() : Fragment() {
             )
         }
         return String.format(
-            getString(R.string.anime_stats_entries),
-            type,
-            stats[filter]
+            getString(R.string.anime_stats_entries), type, stats[filter]
         )
     }
 
@@ -276,7 +275,7 @@ class ProfileFragmentContent() : Fragment() {
                             onStateSelected(ListStatus.NON_EXISTENT)
                         }
                     }
-                    if(status == activeState){
+                    if (status == activeState) {
                         chip.isChecked = true
                     }
                     filterChipGroup.addView(chip)

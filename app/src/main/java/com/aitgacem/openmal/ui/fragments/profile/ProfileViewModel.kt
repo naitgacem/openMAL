@@ -9,7 +9,6 @@ import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import com.aitgacem.openmalnet.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import openmal.domain.ListStatus
 import openmal.domain.MediaType
@@ -22,8 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val prefs: UserPreferencesRepository,
-    private val savedStateHandle: SavedStateHandle,
+    prefs: UserPreferencesRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val mediaType =
         savedStateHandle.get<MediaType>("type") ?: throw IllegalStateException("Type not found")
@@ -33,16 +32,13 @@ class ProfileViewModel @Inject constructor(
 
     private var _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = _isLoading
-
     private var _animeStats = MutableLiveData<Map<ListStatus, Int>>()
     val animeStats: LiveData<Map<ListStatus, Int>> = _animeStats
-
 
     private var _numEpisodesTotal = MutableLiveData<Int>()
     val numEpisodesTotal: LiveData<Int> = _numEpisodesTotal
 
 
-    val filterChipIds = mutableMapOf<Int, ListStatus>()
     private var _filter = MutableLiveData(ListStatus.NON_EXISTENT)
     val filter = _filter
     private var sort = MutableLiveData(SortType.DEFAULT)
