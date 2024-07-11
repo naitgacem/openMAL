@@ -11,12 +11,12 @@ import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentDiscoverBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DiscoverFragment : Fragment() {
     class TabbedLayoutAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
@@ -25,8 +25,14 @@ class DiscoverFragment : Fragment() {
                 else -> DiscoverMangaFragment()
             }
         }
+
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exitTransition = MaterialFadeThrough()
+        enterTransition = MaterialFadeThrough()
+    }
 
     private var _binding: FragmentDiscoverBinding? = null
     private val binding get() = _binding!!
@@ -50,7 +56,7 @@ class DiscoverFragment : Fragment() {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.anime)
-                1 ->  getString(R.string.manga)
+                1 -> getString(R.string.manga)
                 else -> throw IllegalStateException()
             }
         }.attach()

@@ -12,6 +12,7 @@ import com.aitgacem.openmal.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.MediaType
 
@@ -27,6 +28,12 @@ class ProfileFragment : Fragment() {
                 else -> ProfileFragmentContent(MediaType.MANGA)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exitTransition = MaterialFadeThrough()
+        enterTransition = MaterialFadeThrough()
     }
 
     override fun onCreateView(
@@ -51,7 +58,7 @@ class ProfileFragment : Fragment() {
                 else -> throw IllegalStateException()
             }
         }.attach()
-        menu.setOnMenuItemClickListener {_ ->
+        menu.setOnMenuItemClickListener { _ ->
             val action = ProfileFragmentDirections.gotoSettings()
             findNavController().navigate(action)
             true

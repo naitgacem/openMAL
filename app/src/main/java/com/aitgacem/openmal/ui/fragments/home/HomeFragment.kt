@@ -14,10 +14,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.aitgacem.openmal.R
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
+
     class TabbedLayoutAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
         override fun getItemCount(): Int = 2
@@ -28,6 +30,12 @@ class HomeFragment : Fragment() {
                 else -> HomeMangaFragment()
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exitTransition = MaterialFadeThrough()
+        enterTransition = MaterialFadeThrough()
     }
 
     override fun onCreateView(
@@ -48,7 +56,7 @@ class HomeFragment : Fragment() {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.anime)
-                1 ->  getString(R.string.manga)
+                1 -> getString(R.string.manga)
                 else -> throw IllegalStateException()
             }
         }.attach()

@@ -10,6 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.aitgacem.openmal.R
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.Season
 import java.util.Calendar
@@ -24,6 +25,12 @@ class SeasonalFragment : Fragment() {
          * @see TabLayoutMediator.populateTabsFromPagerAdapter
          */
         const val NUMBER_SEASONS = 26
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exitTransition = MaterialFadeThrough()
+        enterTransition = MaterialFadeThrough()
     }
 
     class TabbedLayoutAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
