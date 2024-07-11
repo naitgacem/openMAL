@@ -19,6 +19,7 @@ import com.aitgacem.openmal.databinding.FragmentSearchBinding
 import com.aitgacem.openmal.ui.components.SearchResultsAdapter
 import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
+import com.google.android.material.transition.MaterialSharedAxis
 import openmal.domain.NetworkResult
 import openmal.domain.SortType
 import openmal.domain.Work
@@ -27,6 +28,11 @@ class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
     private val viewModel: SearchViewModel by hiltNavGraphViewModels(R.id.main_nav)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -133,7 +139,6 @@ class SearchFragment : Fragment() {
             suggestionsAdapter.submitList(suggestionsList)
         }
     }
-
 
     private fun resetAndBack(view: View? = null) {
         viewModel.reset()

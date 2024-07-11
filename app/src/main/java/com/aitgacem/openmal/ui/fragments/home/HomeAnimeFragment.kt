@@ -1,7 +1,10 @@
 package com.aitgacem.openmal.ui.fragments.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -42,22 +45,22 @@ class HomeAnimeFragment : Fragment() {
         }
         val topAiringAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
 
-        viewModel.topAiringAnime.observe(viewLifecycleOwner) {result ->
+        viewModel.topAiringAnime.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topAiringAdapter.submitList(result.data)
                 is NetworkResult.Error -> onError(result.apiError)
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topAnimeAdapter = HorizontalListAdapter(glide,gotoAnimeDetail)
-        viewModel.topAnime.observe(viewLifecycleOwner) {result ->
+        val topAnimeAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
+        viewModel.topAnime.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topAnimeAdapter.submitList(result.data)
                 is NetworkResult.Error -> onError(result.apiError)
                 is NetworkResult.Exception -> onException()
             }
         }
-        val topSpecialAdapter = HorizontalListAdapter(glide,gotoAnimeDetail)
+        val topSpecialAdapter = HorizontalListAdapter(glide, gotoAnimeDetail)
         viewModel.topSpecial.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> topSpecialAdapter.submitList(result.data)
@@ -65,9 +68,27 @@ class HomeAnimeFragment : Fragment() {
                 is NetworkResult.Exception -> onException()
             }
         }
-        setupSection(requireContext(), binding.firstTitle, binding.firstRv, getString(R.string.top_airing_anime), topAiringAdapter)
-        setupSection(requireContext(), binding.secondTitle, binding.secondRv, getString(R.string.top_anime_tv_series), topAnimeAdapter)
-        setupSection(requireContext(), binding.thirdTitle, binding.thirdRv, getString(R.string.top_anime_specials), topSpecialAdapter)
+        setupSection(
+            requireContext(),
+            binding.firstTitle,
+            binding.firstRv,
+            getString(R.string.top_airing_anime),
+            topAiringAdapter
+        )
+        setupSection(
+            requireContext(),
+            binding.secondTitle,
+            binding.secondRv,
+            getString(R.string.top_anime_tv_series),
+            topAnimeAdapter
+        )
+        setupSection(
+            requireContext(),
+            binding.thirdTitle,
+            binding.thirdRv,
+            getString(R.string.top_anime_specials),
+            topSpecialAdapter
+        )
     }
 
 

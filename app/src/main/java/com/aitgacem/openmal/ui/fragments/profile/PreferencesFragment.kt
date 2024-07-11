@@ -1,24 +1,32 @@
 package com.aitgacem.openmal.ui.fragments.profile
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentPreferencesBinding
+import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import openmal.domain.PreferredTitleStyle
-import openmal.domain.PreferredTitleStyle.*
+import openmal.domain.PreferredTitleStyle.PREFER_DEFAULT
+import openmal.domain.PreferredTitleStyle.PREFER_ENGLISH
+import openmal.domain.PreferredTitleStyle.PREFER_JAPANESE
+import openmal.domain.PreferredTitleStyle.PREFER_ROMAJI
 
 @AndroidEntryPoint
 class PreferencesFragment : Fragment() {
     private lateinit var binding: FragmentPreferencesBinding
     private val viewModel by hiltNavGraphViewModels<PreferencesViewModel>(R.id.main_nav)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

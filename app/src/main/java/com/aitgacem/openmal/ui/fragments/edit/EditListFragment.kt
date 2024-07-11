@@ -10,6 +10,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -26,6 +27,7 @@ import com.aitgacem.openmal.ui.convertLongToDate
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import openmal.domain.ListStatus
@@ -50,7 +52,11 @@ class EditListFragment : Fragment() {
         }
     })
     private val args: EditListFragmentArgs by navArgs()
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -60,6 +66,7 @@ class EditListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setTransitionName(binding.workImage, args.title) // For shared element transition
         // attempt to preload the title and image
         Glide.with(this).load(args.imageUrl).into(binding.workImage)
         binding.releaseStatus.text = args.title

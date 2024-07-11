@@ -44,13 +44,13 @@ class ProfileAnimeItemViewHolder(itemView: View, val onClick: (View, Work) -> Un
     init {
         itemView.setOnClickListener {
             currentItem?.let {
-                onClick(currentView, it)
+                onClick(imageView, it)
             }
         }
     }
 
     fun bind(glide: RequestManager, item: Work) {
-        ViewCompat.setTransitionName(currentView, item.defaultTitle)
+        ViewCompat.setTransitionName(imageView, item.defaultTitle)
         currentItem = item
         glide
             .load(item.pictureURL)

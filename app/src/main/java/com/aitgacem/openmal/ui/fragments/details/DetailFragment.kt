@@ -2,6 +2,7 @@ package com.aitgacem.openmal.ui.fragments.details
 
 import android.content.Intent
 import android.content.res.Resources.Theme
+import android.graphics.Color
 import android.icu.text.DateFormat
 import android.icu.text.MessageFormat
 import android.net.Uri
@@ -42,6 +43,9 @@ import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -77,7 +81,15 @@ class DetailFragment : Fragment() {
     })
 
     private val loginViewModel: LoginViewModel by hiltNavGraphViewModels(R.id.main_nav)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            scrimColor = Color.TRANSPARENT
+        }
+        enterTransition = MaterialFadeThrough()
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        reenterTransition =  MaterialSharedAxis(MaterialSharedAxis.Z, false)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -92,7 +104,7 @@ class DetailFragment : Fragment() {
         if (shouldRefresh == true) {
             viewModel.refresh()
         }
-
+        ViewCompat.setTransitionName(binding.workImage, args.workTitle) // For shared element transition
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             val url = String.format(
                 getString(
@@ -211,7 +223,6 @@ class DetailFragment : Fragment() {
 
             }
         }
-        setupTransition()
     }
 
 
@@ -488,14 +499,6 @@ class DetailFragment : Fragment() {
         binding.rateBtn.show()
     }
 
-    private fun setupTransition() {
-        ViewCompat.setTransitionName(binding.workImage, args.workTitle)
-        val transition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        sharedElementEnterTransition = transition
-        sharedElementReturnTransition = transition
-    }
-
     private fun onRateButtonClick(view: View) {
         val alert =
             MaterialAlertDialogBuilder(requireContext()).setPositiveButton("Confirm") { dialog, _ ->
@@ -527,7 +530,9 @@ class DetailFragment : Fragment() {
         val action = EditListFragmentDirections.gotoEditList(
             args.id, args.imageUrl ?: "", args.workTitle ?: "", args.mediaType
         )
-        findNavController().navigate(action)
+        findNavController().navigate(action, navigatorExtras = FragmentNavigatorExtras(
+            binding.workImage as View to (args.workTitle ?: "")
+        ))
     }
 
     private suspend fun saveAndToast(

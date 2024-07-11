@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentLoginPromptBinding
-import com.google.android.material.transition.platform.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,9 +31,6 @@ class LoginPromptFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
         binding.button.setOnClickListener {
             loginViewModel.launchBrowserForLogin { intent->
                 findNavController().previousBackStackEntry?.savedStateHandle?.set("REFRESH", true)

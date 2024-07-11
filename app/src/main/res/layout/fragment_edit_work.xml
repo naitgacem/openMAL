@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="10dp">
+    android:paddingHorizontal="10dp"
+    android:transitionGroup="true">
 
     <com.google.android.material.appbar.AppBarLayout
         style="@style/Widget.Material3.CollapsingToolbar.Medium"
@@ -36,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            >
 
             <LinearLayout
                 android:id="@+id/title_section"

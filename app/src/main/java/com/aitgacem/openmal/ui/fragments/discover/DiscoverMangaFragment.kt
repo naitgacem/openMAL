@@ -54,7 +54,7 @@ class DiscoverMangaFragment : Fragment() {
         val favMangaAdapter = HorizontalListAdapter(glide, gotoMangaDetail)
         viewModel.mostFavouritedManga.observe(viewLifecycleOwner) {result ->
             when (result) {
-                is NetworkResult.Success -> favMangaAdapter.submitList(result.data)
+                is NetworkResult.Success -> favMangaAdapter.submitList(result.data.filterNot { popularMangaAdapter.currentList.contains(it) })
                 is NetworkResult.Error -> onError(result.apiError)
                 is NetworkResult.Exception -> onException()
             }

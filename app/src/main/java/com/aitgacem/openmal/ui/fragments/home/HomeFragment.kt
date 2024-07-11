@@ -34,8 +34,8 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exitTransition = MaterialFadeThrough()
         enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
     }
 
     override fun onCreateView(

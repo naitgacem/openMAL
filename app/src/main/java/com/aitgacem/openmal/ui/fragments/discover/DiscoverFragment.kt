@@ -30,8 +30,8 @@ class DiscoverFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exitTransition = MaterialFadeThrough()
         enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
     }
 
     private var _binding: FragmentDiscoverBinding? = null

@@ -29,8 +29,8 @@ class SeasonalFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exitTransition = MaterialFadeThrough()
         enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
     }
 
     class TabbedLayoutAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
