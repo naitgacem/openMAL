@@ -1,5 +1,10 @@
 package com.aitgacem.openmal.ui.fragments.profile
 
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +15,9 @@ import android.view.ViewGroup.LayoutParams
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewmodel.MutableCreationExtras
@@ -20,17 +25,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentProfileContentBinding
 import com.aitgacem.openmal.ui.components.ProfileListAdapter
-import com.aitgacem.openmal.ui.fragments.login.LoginPromptFragmentDirections
-import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
 import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.ListStatus
 import openmal.domain.MediaType
@@ -64,13 +69,10 @@ class ProfileFragmentContent() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var shouldShowScrim = false
         viewmodel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
-                if (shouldShowScrim) binding.scrim.visibility = VISIBLE
                 binding.loadingScreen.visibility = VISIBLE
             } else {
-                binding.scrim.visibility = GONE
                 binding.loadingScreen.visibility = GONE
             }
         }
@@ -80,8 +82,6 @@ class ProfileFragmentContent() : Fragment() {
             gotoWorkDetail(
                 findNavController(), transitionView, work
             )
-        }, onListChange = { _, currList ->
-            shouldShowScrim = currList.isNotEmpty() // Disable the scrim when the list is empty, looks odd
         })
 
         viewmodel.workList.observe(viewLifecycleOwner) { result ->
@@ -123,7 +123,8 @@ class ProfileFragmentContent() : Fragment() {
             val modalBottomSheet = ModalBottomSheet(viewmodel.mediaType)
             modalBottomSheet.show(childFragmentManager, ModalBottomSheet.TAG)
         }
-        val headerAdapter = ProfileHeaderAdapter(mediaType = viewmodel.mediaType,
+        val headerAdapter = ProfileHeaderAdapter(
+            mediaType = viewmodel.mediaType,
             onStateSelected = { listStatus ->
                 viewmodel.changeFilter(listStatus)
                 viewmodel.setLoading(true)
@@ -134,11 +135,48 @@ class ProfileFragmentContent() : Fragment() {
                 headerLiveData.observe(viewLifecycleOwner) { title: String ->
                     textView.text = title
                 }
-            })
+            }
+        )
         val concat = ConcatAdapter(headerAdapter, adapter)
         val rv = binding.recyclerview
+        if(requireContext().resources.configuration.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES){
+            // TODO support night theme as well, by choosing an appropriate color which looks good on both night and day modes
+            rv.addItemDecoration(ScrimDecoration())
+        }
+        viewmodel.isRefreshing.observe(viewLifecycleOwner) {isRefresing ->
+            binding.swipeRefresh.isRefreshing = isRefresing
+            rv.invalidateItemDecorations()
+        }
+        binding.swipeRefresh.setOnRefreshListener{
+            viewmodel.refresh()
+        }
         rv.layoutManager = LinearLayoutManager(requireContext())
         rv.adapter = concat
+    }
+
+    inner class ScrimDecoration : ItemDecoration() {
+        private val paint = Paint().apply {
+            color = MaterialColors.getColor(
+                requireContext(), com.google.android.material.R.attr.scrimBackground, ""
+            )
+        }
+
+        private val rect = Rect()
+
+        override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+            if (viewmodel.isRefreshing.value == false) {
+                return
+            }
+            val children = parent.children
+            for (child in children.drop(1)) {
+                val left = child.left
+                val right = child.right
+                val top = child.top
+                val bottom = child.bottom
+                rect.set(left, top, right, bottom)
+                c.drawRect(rect, paint)
+            }
+        }
     }
 
     private fun getFilterText(mediaType: MediaType, status: ListStatus): String {

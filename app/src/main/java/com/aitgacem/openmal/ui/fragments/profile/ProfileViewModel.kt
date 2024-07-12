@@ -46,6 +46,9 @@ class ProfileViewModel @Inject constructor(
     private val isNsfwEnabled = prefs.isNsfwEnabledFlow
     private val preferredTitleStyle = prefs.preferredTitleStyle
 
+    private var _isRefreshing = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
     init {
         refresh()
         refreshIfNeeded()
@@ -53,6 +56,7 @@ class ProfileViewModel @Inject constructor(
 
 
     private fun loadUserWorkList() {
+        _isRefreshing.value = true
         viewModelScope.launch {
             val userList = when (mediaType) {
                 MediaType.ANIME -> {
@@ -68,6 +72,7 @@ class ProfileViewModel @Inject constructor(
                 }
             }
             _workList.postValue(userList)
+            _isRefreshing.value = false
         }
     }
 

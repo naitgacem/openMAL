@@ -13,15 +13,9 @@ import com.aitgacem.openmal.R
 import com.bumptech.glide.RequestManager
 import openmal.domain.Work
 
-class ProfileListAdapter(private val glide: RequestManager, private val onClick: (View, Work) -> Unit, private val onListChange: (List<Work>, List<Work>) -> Unit ) :
+class ProfileListAdapter(private val glide: RequestManager, private val onClick: (View, Work) -> Unit) :
     ListAdapter<Work, ProfileAnimeItemViewHolder>(WorkDiffCallBack) {
 
-    override fun onCurrentListChanged(
-        previousList: MutableList<Work>,
-        currentList: MutableList<Work>
-    ) {
-        onListChange(previousList, currentList)
-    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileAnimeItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.profile_list_item, parent, false)
         return ProfileAnimeItemViewHolder(view, onClick)
