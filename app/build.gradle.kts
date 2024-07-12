@@ -66,6 +66,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.recyclerview)
     implementation(libs.coordinator.layout)
+    implementation(libs.swipeRefreshLayout)
+
 
     //NAVIGATION
     implementation (libs.navigation.fragment.ktx)

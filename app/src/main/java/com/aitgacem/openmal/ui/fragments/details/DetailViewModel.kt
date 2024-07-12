@@ -1,5 +1,6 @@
 package com.aitgacem.openmal.ui.fragments.details
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -30,6 +31,9 @@ class DetailViewModel @Inject constructor(
         val value = prefs.isLoggedInFlow.firstOrNull()
         emit(value)
     }
+    private var _isRefreshing = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
     val state = MutableLiveData<NetworkResult<Work>>()
     val work = MutableLiveData<Work>()
 
@@ -38,12 +42,14 @@ class DetailViewModel @Inject constructor(
     }
 
     fun refresh() {
+        _isRefreshing.postValue(true)
         viewModelScope.launch {
             val result = if (workType == MediaType.ANIME) {
                 animeRepository.getAnimeDetails(id = id)
             } else {
                 mangaRepository.getMangaDetails(id = id)
             }
+            _isRefreshing.postValue(false)
             state.postValue(result)
             if(result is NetworkResult.Success){
                 work.postValue(result.data)

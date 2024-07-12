@@ -7,7 +7,6 @@ import android.icu.text.DateFormat
 import android.icu.text.MessageFormat
 import android.net.Uri
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -51,7 +50,6 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import openmal.domain.Anime
-import openmal.domain.ApiError
 import openmal.domain.ListStatus
 import openmal.domain.Manga
 import openmal.domain.MediaType
@@ -88,8 +86,9 @@ class DetailFragment : Fragment() {
         }
         enterTransition = MaterialFadeThrough()
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        reenterTransition =  MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -103,6 +102,12 @@ class DetailFragment : Fragment() {
             findNavController().currentBackStackEntry?.savedStateHandle?.get<Boolean>("REFRESH")
         if (shouldRefresh == true) {
             viewModel.refresh()
+        }
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+        viewModel.isRefreshing.observe(viewLifecycleOwner){isRefreshing ->
+            binding.swipeRefresh.isRefreshing = isRefreshing
         }
         ViewCompat.setTransitionName(binding.workImage, args.workTitle) // For shared element transition
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
@@ -191,25 +196,7 @@ class DetailFragment : Fragment() {
                     )
                 }
 
-                is NetworkResult.Error -> {
-                    val errorMessage = getString(
-                        when (networkResult.apiError) {
-                            ApiError.BAD_REQUEST -> R.string.bad_request
-                            ApiError.UNAUTHORIZED -> R.string.unauthorized
-                            ApiError.FORBIDDEN -> R.string.forbidden
-                            ApiError.NOT_FOUND -> R.string.not_found
-                            ApiError.UNKNOWN -> R.string.unknown
-                        }
-                    )
-                    val message = String.format(
-                        getString(R.string.network_error_message), networkResult.code, errorMessage
-                    )
-                    Toast.makeText(
-                        requireContext(), message, LENGTH_SHORT
-                    ).show()
-                }
-
-                is NetworkResult.Exception -> {
+                else -> {
                     Toast.makeText(
                         requireContext(), getString(R.string.netowork_error_occurred), LENGTH_SHORT
                     ).show()
@@ -220,7 +207,6 @@ class DetailFragment : Fragment() {
                         binding.floatingActionButton.hide()
                     }
                 }
-
             }
         }
     }
@@ -530,9 +516,11 @@ class DetailFragment : Fragment() {
         val action = EditListFragmentDirections.gotoEditList(
             args.id, args.imageUrl ?: "", args.workTitle ?: "", args.mediaType
         )
-        findNavController().navigate(action, navigatorExtras = FragmentNavigatorExtras(
-            binding.workImage as View to (args.workTitle ?: "")
-        ))
+        findNavController().navigate(
+            action, navigatorExtras = FragmentNavigatorExtras(
+                binding.workImage as View to (args.workTitle ?: "")
+            )
+        )
     }
 
     private suspend fun saveAndToast(
