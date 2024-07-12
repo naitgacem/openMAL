@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginPromptFragment : Fragment() {
     private lateinit var binding: FragmentLoginPromptBinding
     private val loginViewModel: LoginViewModel by hiltNavGraphViewModels(R.id.main_nav)
-    private val args by navArgs<LoginPromptFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,11 +32,11 @@ class LoginPromptFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.button.setOnClickListener {
             loginViewModel.launchBrowserForLogin { intent->
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("REFRESH", true)
                 startActivity(intent)
             }
         }
-        args.authorizationCode?.let { code ->
+        val authorizationCode = LoginPromptFragmentArgs.fromBundle(arguments ?: Bundle()).authorizationCode
+        authorizationCode?.let { code ->
             loginViewModel.initiateLogin(code)
             binding.button.visibility = GONE
             binding.loading.visibility = VISIBLE

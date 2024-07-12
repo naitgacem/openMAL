@@ -54,7 +54,6 @@ class ProfileFragmentContent() : Fragment() {
             set(DEFAULT_ARGS_KEY, bundleOf("type" to mediaType))
         }
     })
-    private val loginViewModel: LoginViewModel by hiltNavGraphViewModels(R.id.main_nav)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -65,12 +64,6 @@ class ProfileFragmentContent() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel.isLoggedIn.observe(viewLifecycleOwner) { loggedIn ->
-            if (!loggedIn) {
-                val action = LoginPromptFragmentDirections.gotoLoginPrompt()
-                findNavController().navigate(action)
-            }
-        }
         var shouldShowScrim = false
         viewmodel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {

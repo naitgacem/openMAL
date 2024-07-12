@@ -75,11 +75,9 @@ class UserPreferencesRepository @Inject constructor(
         it[PreferencesKeys.CODE_CHALLENGE] ?: ""
     }
 
-    fun updateCodeChallenge(code: String) {
-        runBlocking {
-            dataStore.edit {
-                it[PreferencesKeys.CODE_CHALLENGE] = code
-            }
+    suspend fun updateCodeChallenge(code: String) {
+        dataStore.edit {
+            it[PreferencesKeys.CODE_CHALLENGE] = code
         }
     }
 
@@ -113,7 +111,7 @@ class UserPreferencesRepository @Inject constructor(
     fun updatePreferredTitleStyle(style: PreferredTitleStyle) {
         runBlocking {
             dataStore.edit {
-                it[PreferencesKeys.PREFERRED_TITLE_LANGUAGE] = when(style){
+                it[PreferencesKeys.PREFERRED_TITLE_LANGUAGE] = when (style) {
                     PreferredTitleStyle.PREFER_DEFAULT -> "null"
                     PreferredTitleStyle.PREFER_ENGLISH -> PREFERRED_TITLE_LANGUAGE_ENGLISH
                     PreferredTitleStyle.PREFER_JAPANESE -> PREFERRED_TITLE_LANGUAGE_JAPANESE

@@ -39,7 +39,6 @@ class LoginViewModel @Inject constructor(
     private val codeChallenge = generateCodeVerifier()
 
     fun initiateLogin(authorizationCode: String) {
-
         viewModelScope.launch {
             withContext(NonCancellable){
                 try {
@@ -89,7 +88,9 @@ class LoginViewModel @Inject constructor(
     fun launchBrowserForLogin(launch: (Intent) -> Unit) {
         val url =
             "https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${apiKey}&code_challenge=${codeChallenge}&code_challenge_method=plain"
-        prefs.updateCodeChallenge(codeChallenge)
+        viewModelScope.launch(NonCancellable) {
+            prefs.updateCodeChallenge(codeChallenge)
+        }
         launch(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 }
