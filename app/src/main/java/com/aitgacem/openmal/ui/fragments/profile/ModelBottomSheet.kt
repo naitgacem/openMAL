@@ -60,7 +60,6 @@ class ModalBottomSheet() : BottomSheetDialogFragment() {
                     viewModel.changeSorting(SortType.START_DATE)
                 }
             }
-            viewModel.setLoading(true)
             dismiss()
         }
     }

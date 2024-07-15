@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -68,8 +69,9 @@ class ProfileFragmentContent() : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d("TAG", "onViewCreated: $this ")
         super.onViewCreated(view, savedInstanceState)
-        viewmodel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        viewmodel.isRefreshing.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
                 binding.loadingScreen.visibility = VISIBLE
             } else {
@@ -127,7 +129,6 @@ class ProfileFragmentContent() : Fragment() {
             mediaType = viewmodel.mediaType,
             onStateSelected = { listStatus ->
                 viewmodel.changeFilter(listStatus)
-                viewmodel.setLoading(true)
             },
             activeState = viewmodel.filter.value ?: ListStatus.NON_EXISTENT,
             onFilterButtonClicked = onFilterButtonClicked,
@@ -139,15 +140,17 @@ class ProfileFragmentContent() : Fragment() {
         )
         val concat = ConcatAdapter(headerAdapter, adapter)
         val rv = binding.recyclerview
-        if(requireContext().resources.configuration.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES){
+        if (requireContext().resources.configuration.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
             // TODO support night theme as well, by choosing an appropriate color which looks good on both night and day modes
             rv.addItemDecoration(ScrimDecoration())
         }
-        viewmodel.isRefreshing.observe(viewLifecycleOwner) {isRefresing ->
+        viewmodel.isRefreshing.observe(viewLifecycleOwner) { isRefresing ->
             binding.swipeRefresh.isRefreshing = isRefresing
-            rv.invalidateItemDecorations()
+            if (!rv.isComputingLayout) {
+                rv.invalidateItemDecorations()
+            }
         }
-        binding.swipeRefresh.setOnRefreshListener{
+        binding.swipeRefresh.setOnRefreshListener {
             viewmodel.refresh()
         }
         rv.layoutManager = LinearLayoutManager(requireContext())
@@ -214,7 +217,6 @@ class ProfileFragmentContent() : Fragment() {
         when (result) {
             is NetworkResult.Success -> {
                 adapter.submitList(result.data) {
-                    viewmodel.setLoading(false)
                 }
             }
 
@@ -222,11 +224,10 @@ class ProfileFragmentContent() : Fragment() {
                 Toast.makeText(
                     requireContext(), getString(R.string.check_internet), Toast.LENGTH_SHORT
                 ).show()
-                viewmodel.setLoading(false)
+
                 binding.refreshLayout.root.visibility = VISIBLE
                 binding.refreshLayout.refreshBtn.setOnClickListener {
                     viewmodel.refresh()
-                    viewmodel.setLoading(true)
                     binding.refreshLayout.root.visibility = GONE
                 }
             }
@@ -285,6 +286,8 @@ class ProfileFragmentContent() : Fragment() {
         private val onFilterButtonClicked: (View) -> Unit,
         private val bindTitleText: (TextView) -> Unit,
     ) : RecyclerView.Adapter<ProfileHeaderAdapter.ProfileHeaderViewHolder>() {
+        private val mapOfChips: MutableMap<Int, ListStatus> = mutableMapOf()
+
         inner class ProfileHeaderViewHolder(view: View) : ViewHolder(view)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileHeaderViewHolder {
@@ -299,20 +302,24 @@ class ProfileFragmentContent() : Fragment() {
                     width = LayoutParams.WRAP_CONTENT
                     height = LayoutParams.WRAP_CONTENT
                     text = getFilterText(mediaType, status)
-                    setOnCheckedChangeListener { _, isChecked ->
-                        if (isChecked) {
-                            onStateSelected(status)
-                        } else {
-                            onStateSelected(ListStatus.NON_EXISTENT)
-                        }
-                    }
                     if (status == activeState) {
                         chip.isChecked = true
                     }
                     filterChipGroup.addView(chip)
+                    mapOfChips[chip.id] = status
                 }
             }
-
+            filterChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+                if (checkedIds.isEmpty()) {
+                    onStateSelected(ListStatus.NON_EXISTENT)
+                    return@setOnCheckedStateChangeListener
+                }
+                check(checkedIds.size == 1) { "More than one chip selected" }
+                val checkedStatus = checkNotNull(mapOfChips[checkedIds[0]]) {
+                    "Status from chip ID not found"
+                }
+                onStateSelected(checkedStatus)
+            }
             filterBtn.setOnClickListener(onFilterButtonClicked)
             bindTitleText(statsTextView)
             return ProfileHeaderViewHolder(view)

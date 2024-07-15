@@ -22,7 +22,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     prefs: UserPreferencesRepository,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val mediaType =
         savedStateHandle.get<MediaType>("type") ?: throw IllegalStateException("Type not found")
@@ -30,14 +30,11 @@ class ProfileViewModel @Inject constructor(
     private var _workList = MutableLiveData<NetworkResult<List<Work>>>()
     val workList: LiveData<NetworkResult<List<Work>>> = _workList
 
-    private var _isLoading = MutableLiveData(true)
-    val isLoading: LiveData<Boolean> = _isLoading
     private var _animeStats = MutableLiveData<Map<ListStatus, Int>>()
     val animeStats: LiveData<Map<ListStatus, Int>> = _animeStats
 
     private var _numEpisodesTotal = MutableLiveData<Int>()
     val numEpisodesTotal: LiveData<Int> = _numEpisodesTotal
-
 
     private var _filter = MutableLiveData(ListStatus.NON_EXISTENT)
     val filter = _filter
@@ -50,6 +47,8 @@ class ProfileViewModel @Inject constructor(
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     init {
+        val list: List<Work> = savedStateHandle["list"] ?: emptyList()
+        _workList.value = NetworkResult.Success(list)
         refresh()
         refreshIfNeeded()
     }
@@ -58,7 +57,7 @@ class ProfileViewModel @Inject constructor(
     private fun loadUserWorkList() {
         _isRefreshing.value = true
         viewModelScope.launch {
-            val userList = when (mediaType) {
+            val result = when (mediaType) {
                 MediaType.ANIME -> {
                     userRepository.getUserAnimeList(
                         status = _filter.value!!, sort = sort.value!!
@@ -71,7 +70,10 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             }
-            _workList.postValue(userList)
+            _workList.postValue(result)
+            if (result is NetworkResult.Success) {
+                savedStateHandle["list"] = result.data
+            }
             _isRefreshing.value = false
         }
     }
@@ -91,14 +93,18 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun changeFilter(status: ListStatus) {
-        _filter.value = status
-        loadUserWorkList()
+        if (_filter.value != status) {
+            _filter.value = status
+            loadUserWorkList()
+        }
     }
 
 
     fun changeSorting(type: SortType) {
-        sort.value = type
-        loadUserWorkList()
+        if (sort.value != type) {
+            sort.value = type
+            loadUserWorkList()
+        }
     }
 
     fun refresh() {
@@ -111,13 +117,10 @@ class ProfileViewModel @Inject constructor(
             //nothing
         }
         viewModelScope.launch {
-            combination.collect{
+            combination.collect {
                 refresh()
             }
         }
     }
 
-    fun setLoading(state: Boolean) {
-        _isLoading.postValue(state)
-    }
 }

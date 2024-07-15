@@ -32,8 +32,8 @@ class LoginViewModel @Inject constructor(
     val savedStateHandle: SavedStateHandle,
     @ApplicationContext val ctx: Context
 ) : ViewModel() {
-    private var _isLoggedIn = prefs.isLoggedInFlow
-    val isLoggedIn = _isLoggedIn.asLiveData()
+    val isLoggedInFlow = prefs.isLoggedInFlow
+    val isLoggedIn = isLoggedInFlow.asLiveData()
     private var _loginError = MutableLiveData(false)
     val loginError: LiveData<Boolean> = _loginError
     private val codeChallenge = generateCodeVerifier()
