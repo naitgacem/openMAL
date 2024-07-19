@@ -64,7 +64,7 @@ object WorkDiffCallBack : DiffUtil.ItemCallback<Work>() {
     }
 
     override fun areContentsTheSame(oldItem: Work, newItem: Work): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem == newItem
     }
 }
 

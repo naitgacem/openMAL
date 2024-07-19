@@ -19,6 +19,9 @@ import com.aitgacem.openmal.databinding.FragmentSearchBinding
 import com.aitgacem.openmal.ui.components.SearchResultsAdapter
 import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.transition.MaterialSharedAxis
 import openmal.domain.NetworkResult
 import openmal.domain.SortType
@@ -32,6 +35,7 @@ class SearchFragment : Fragment() {
         super.onCreate(savedInstanceState)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
     }
 
     override fun onCreateView(
@@ -48,6 +52,10 @@ class SearchFragment : Fragment() {
             resetAndBack()
         }
         val glide = Glide.with(this)
+            .applyDefaultRequestOptions(
+                RequestOptions().transform(CenterCrop(), RoundedCorners(16))
+            )
+
         val rv = binding.recyclerView
         val adapter = SearchResultsAdapter(glide) { transitionView: View, work: Work ->
             gotoWorkDetail(
@@ -59,7 +67,14 @@ class SearchFragment : Fragment() {
         rv.adapter = adapter
         viewModel.searchResults.observe(viewLifecycleOwner) { result ->
             when (result) {
-                is NetworkResult.Success -> adapter.submitList(result.data)
+                is NetworkResult.Success -> {
+                    if(result.data.isEmpty()){
+                        binding.noResultsFoundTextview.visibility = View.VISIBLE
+                    } else {
+                        binding.noResultsFoundTextview.visibility = View.GONE
+                    }
+                    adapter.submitList(result.data)
+                }
                 else -> {
 
                 }

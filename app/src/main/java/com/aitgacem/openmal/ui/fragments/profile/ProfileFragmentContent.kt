@@ -141,7 +141,7 @@ class ProfileFragmentContent() : Fragment() {
         val concat = ConcatAdapter(headerAdapter, adapter)
         val rv = binding.recyclerview
         if (requireContext().resources.configuration.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
-            // TODO support night theme as well, by choosing an appropriate color which looks good on both night and day modes
+            // TODO support day theme as well, by choosing an appropriate color which looks good on both night and day modes
             rv.addItemDecoration(ScrimDecoration())
         }
         viewmodel.isRefreshing.observe(viewLifecycleOwner) { isRefresing ->

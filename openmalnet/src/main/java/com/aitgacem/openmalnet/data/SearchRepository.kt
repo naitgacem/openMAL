@@ -13,7 +13,7 @@ class SearchRepository @Inject constructor(
     private val mangaService: MangaService,
     private val prefs: UserPreferencesRepository,
 ) {
-    private val searchFields = "alternative_titles,mean,start_date"
+    private val searchFields = "alternative_titles,mean,start_date,start_season"
     suspend fun searchAll(
         query: String,
         limit: Int? = null,
@@ -26,7 +26,6 @@ class SearchRepository @Inject constructor(
             handleApi { animeService.getAnimeList(query, limit, offset, searchFields, nsfw = nsfw) }
         val mangaResults =
             handleApi { mangaService.getMangaList(query, limit, offset, searchFields, nsfw = nsfw) }
-        val result = mutableListOf<Work>()
         // When they both return an exception
         if (animeResults is NetworkResult.Exception && mangaResults is NetworkResult.Exception) {
             return NetworkResult.Exception(animeResults.e)
@@ -37,15 +36,27 @@ class SearchRepository @Inject constructor(
         }
 
         // combine results
-        if (mangaResults is NetworkResult.Success) {
-            result.addAll(mangaResults.data.data.map { it.node }
-                .map { it.toListWork(preferredTitleStyle) })
+        val mangaList = if (mangaResults is NetworkResult.Success) {
+            mangaResults.data.data.map { it.node }
+                .map { it.toListWork(preferredTitleStyle) }
+        } else {
+            emptyList()
         }
-        if (animeResults is NetworkResult.Success) {
-            result.addAll(animeResults.data.data.map { it.node }
-                .map { it.toListWork(preferredTitleStyle) })
+
+        val animeList = if (animeResults is NetworkResult.Success) {
+            animeResults.data.data.map { it.node }
+                .map { it.toListWork(preferredTitleStyle) }
+        } else {
+            emptyList()
         }
-        return NetworkResult.Success(result)
+
+        val combination = mutableListOf<Work>()
+        val maxSize = maxOf(mangaList.size, animeList.size)
+        for (i in 0 until maxSize) {
+            if (i < mangaList.size) combination.add(mangaList[i])
+            if (i < animeList.size) combination.add(animeList[i])
+        }
+        return NetworkResult.Success(combination)
     }
 
 }

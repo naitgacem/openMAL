@@ -193,4 +193,12 @@
     <string name="search_default_order">Default order</string>
     <string name="search_score_order">Order by score</string>
     <string name="search_airing_date_order">Airing date</string>
+    <string name="work_thumbnail_image">Work thumbnail image</string>
+    <string name="anime_release_season">%s %s</string>
+    <string name="rating_star">%.1f★</string>
+    <string name="winter">Winter</string>
+    <string name="spring">Spring</string>
+    <string name="summer">Summer</string>
+    <string name="fall">Fall</string>
+    <string name="no_results_found">No results found :(</string>
 </resources>

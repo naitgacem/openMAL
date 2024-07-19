@@ -6,25 +6,23 @@
     android:layout_height="match_parent"
     android:transitionGroup="true">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nested_scroll_view"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:id="@+id/no_results_found_textview"
+        android:text="@string/no_results_found"
+        android:gravity="center" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:itemCount="5"
-            tools:listitem="@layout/anime_horizontal_card" />
-
-    </androidx.core.widget.NestedScrollView>
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:itemCount="5"
+        tools:listitem="@layout/search_result_item" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -50,24 +48,24 @@
             android:orientation="horizontal">
 
             <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filter_work_type"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:id="@+id/filter_work_type"
                 android:layout_gravity="start|center_vertical"
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/anime"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:checkable="true"
-                    android:id="@+id/anime"
                     android:text="@string/anime" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/manga"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:checkable="true"
-                    android:id="@+id/manga"
                     android:text="@string/manga" />
             </com.google.android.material.chip.ChipGroup>
 
@@ -75,8 +73,7 @@
                 android:id="@+id/spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|center_vertical"
-                />
+                android:layout_gravity="end|center_vertical" />
 
         </FrameLayout>
 

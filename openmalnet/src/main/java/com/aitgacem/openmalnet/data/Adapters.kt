@@ -62,6 +62,7 @@ fun AnimeForList.toListWork(
             meanScore = anime.mean,
             listStatus = anime.myListStatus?.toUserList(),
             startDate = anime.startDate,
+            startSeason = anime.startSeason?.let { Pair(it.season.toSeason(), it.year) },
         )
     }
 }
