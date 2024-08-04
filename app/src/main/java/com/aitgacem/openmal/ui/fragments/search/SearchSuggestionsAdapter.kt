@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.aitgacem.openmal.R
@@ -17,8 +15,12 @@ import com.aitgacem.openmal.ui.components.WorkDiffCallBack
 import com.bumptech.glide.RequestManager
 import openmal.domain.Work
 
-class SearchSuggestionsAdapter(private val glide: RequestManager, private val onClick: (String) -> Unit) :
+class SearchSuggestionsAdapter(
+    private val glide: RequestManager,
+    private val onClick: (String) -> Unit
+) :
     ListAdapter<Work, SearchSuggestionViewHolder>(WorkDiffCallBack) {
+    var currentlyTypedQuery = ""
     override fun onBindViewHolder(holder: SearchSuggestionViewHolder, position: Int) {
         val term = getItem(position)
         holder.bind(term, glide)
@@ -27,12 +29,15 @@ class SearchSuggestionsAdapter(private val glide: RequestManager, private val on
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchSuggestionViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.search_suggestion_item, parent, false)
-        return SearchSuggestionViewHolder(view, onClick)
+        return SearchSuggestionViewHolder(view, onClick, currentlyTypedQuery)
     }
 }
 
-class SearchSuggestionViewHolder(itemView: View, val onClick: (String) -> Unit) :
-    ViewHolder(itemView) {
+class SearchSuggestionViewHolder(
+    itemView: View,
+    val onClick: (String) -> Unit,
+    private val currentlyTypedQuery: String
+) : ViewHolder(itemView) {
     private val imageView = itemView.findViewById<ImageView>(R.id.suggestion_icon)
     private val mainTitle = itemView.findViewById<TextView>(R.id.suggestion_text_main)
     private val altTitle = itemView.findViewById<TextView>(R.id.suggestion_text_alt)
@@ -46,7 +51,6 @@ class SearchSuggestionViewHolder(itemView: View, val onClick: (String) -> Unit) 
             currentItem?.let {
                 onClick(suggestion)
             }
-
         }
     }
 
@@ -62,14 +66,14 @@ class SearchSuggestionViewHolder(itemView: View, val onClick: (String) -> Unit) 
         } else {
             altTitle.visibility = GONE
         }
-        if (suggestion.synonyms.isEmpty()) {
+        val synonyms = suggestion.synonyms.filter { it.contains(currentlyTypedQuery, true) }
+        if (synonyms.isEmpty()) {
             suggestionsContainer.visibility = GONE
         } else {
             synonymTitle.text = String.format(
                 itemView.context.getString(R.string.also_known_as),
-                suggestion.synonyms.joinToString()
+                synonyms.joinToString()
             )
-
         }
     }
 }

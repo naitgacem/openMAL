@@ -68,29 +68,20 @@ class SearchFragment : Fragment() {
         viewModel.searchResults.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> {
-                    if(result.data.isEmpty()){
+                    if (result.data.isEmpty()) {
                         binding.noResultsFoundTextview.visibility = View.VISIBLE
                     } else {
                         binding.noResultsFoundTextview.visibility = View.GONE
                     }
                     adapter.submitList(result.data)
                 }
+
                 else -> {
 
                 }
             }
         }
         binding.searchBar.setNavigationOnClickListener(::resetAndBack)
-        binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
-            viewModel.updateSearchTerm(text.toString())
-        }
-        binding.searchView.editText.setOnEditorActionListener { _, _, _ ->
-            val text = binding.searchView.text
-            binding.searchBar.setText(text)
-            binding.searchView.hide()
-            viewModel.doSearch(text.toString())
-            false
-        }
 
         // Sorting and filtering--------
         val sortOrders = arrayOf(
@@ -142,6 +133,19 @@ class SearchFragment : Fragment() {
             binding.searchView.hide()
             viewModel.doSearch(title)
         }
+
+        binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
+            suggestionsAdapter.currentlyTypedQuery = text.toString()
+            viewModel.updateSearchTerm(text.toString())
+        }
+        binding.searchView.editText.setOnEditorActionListener { _, _, _ ->
+            val text = binding.searchView.text
+            binding.searchBar.setText(text)
+            binding.searchView.hide()
+            viewModel.doSearch(text.toString())
+            false
+        }
+
         binding.suggestionsRv.layoutManager = LinearLayoutManager(requireContext())
         binding.suggestionsRv.adapter = suggestionsAdapter
         binding.suggestionsRv.addItemDecoration(
@@ -151,7 +155,7 @@ class SearchFragment : Fragment() {
             )
         )
         viewModel.suggestions.observe(viewLifecycleOwner) { suggestionsList ->
-            suggestionsAdapter.submitList(suggestionsList)
+            suggestionsAdapter.submitList(suggestionsList.distinctBy { it.userPreferredTitle })
         }
     }
 
