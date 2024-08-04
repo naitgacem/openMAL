@@ -39,6 +39,7 @@ import androidx.navigation.fragment.navArgs
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentDetailBinding
 import com.aitgacem.openmal.ui.convertDateToLong
+import com.aitgacem.openmal.ui.formattedString
 import com.aitgacem.openmal.ui.fragments.edit.EditListFragmentDirections
 import com.aitgacem.openmal.ui.fragments.edit.EditListViewModel
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
@@ -60,6 +61,7 @@ import openmal.domain.Manga
 import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.ReleaseStatus
+import openmal.domain.Season
 import openmal.domain.Work
 import java.text.DateFormat.getDateInstance
 
@@ -369,9 +371,7 @@ class DetailFragment : Fragment() {
     private fun displayAnimeInfo(work: Anime) {
         binding.rateTheWork.text = getString(R.string.rate_anime)
         binding.releasePeriod.text = getString(R.string.air_period)
-        binding.animeStartSeason.text = work.startSeason?.let { season ->
-            "${season.first.name.lowercase()} ${season.second}"
-        }
+        binding.animeStartSeason.text = work.startSeason?.formattedString(requireContext())
         binding.contentRating.text = work.contentRating.description
         binding.numReleases.text = MessageFormat.format(
             getString(R.string.anime_episodes_and_rating), mapOf(

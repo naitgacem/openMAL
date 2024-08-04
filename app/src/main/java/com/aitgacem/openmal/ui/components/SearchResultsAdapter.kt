@@ -10,12 +10,12 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aitgacem.openmal.R
+import com.aitgacem.openmal.ui.formattedString
 import com.bumptech.glide.RequestManager
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import openmal.domain.Anime
 import openmal.domain.Manga
-import openmal.domain.Season
 import openmal.domain.Work
 
 class SearchResultsAdapter(
@@ -93,21 +93,8 @@ class SearchResultViewHolder(itemView: View, val gotoDetail: (View, Work) -> Uni
         )
         mediaTypeCard.setCardBackgroundColor(backgroundColor(itemView.context))
         if (item is Anime) {
-            item.startSeason?.let { pair ->
-                releaseInfo.text = String.format(
-                    itemView.context.getString(R.string.anime_release_season),
-                    itemView.context.getString(
-                        when(pair.first){
-                            Season.WINTER -> R.string.winter
-                            Season.SPRING -> R.string.spring
-                            Season.SUMMER -> R.string.summer
-                            Season.FALL -> R.string.fall
-                        }
-                    ),
-                    pair.second.toString()
-                )
-            }
-        } else {
+            releaseInfo.text = item.startSeason?.formattedString(itemView.context)
+        } else { // do NOT remove this else branch!! It is necessary because of item recycling
             releaseInfo.text = null
         }
     }
