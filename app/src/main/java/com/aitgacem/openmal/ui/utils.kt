@@ -1,6 +1,7 @@
 package com.aitgacem.openmal.ui
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.navigation.NavController
@@ -52,7 +53,7 @@ fun convertDateToLong(dateString: String): Long {
     return MaterialDatePicker.todayInUtcMilliseconds()
 }
 
-fun gotoWorkDetail(controller: NavController, transitionView: View, work: Work){
+fun gotoWorkDetail(controller: NavController, transitionView: View, work: Work) {
     val action = DetailFragmentDirections.gotoDetail(
         work.id, work.mediaType, work.pictureURL ?: "", work.defaultTitle
     )
@@ -61,4 +62,8 @@ fun gotoWorkDetail(controller: NavController, transitionView: View, work: Work){
             transitionView to work.defaultTitle
         )
     )
+}
+
+fun TypedValue.isColor(): Boolean {
+    return (this.type >= TypedValue.TYPE_FIRST_COLOR_INT) && (this.type <= TypedValue.TYPE_LAST_COLOR_INT)
 }

@@ -3,5 +3,9 @@
         <item name="filter_chip_style">@style/Widget.Material3.Chip.Filter</item>
         <item name="settings_title_font_size">16sp</item>
         <item name="settings_subtitle_font_size">12sp</item>
+        <item name="currently_releasing_color">@color/currently_releasing_color</item>
+        <item name="finished_color">@color/finished_color</item>
+        <item name="not_yet_released_color">@color/not_yet_released_color</item>
+        <item name="on_hiatus_color">@color/on_hiatus_color</item>
     </style>
 </resources>

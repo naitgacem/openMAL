@@ -7,6 +7,10 @@ import android.icu.text.DateFormat
 import android.icu.text.MessageFormat
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -39,6 +43,7 @@ import com.aitgacem.openmal.ui.fragments.edit.EditListFragmentDirections
 import com.aitgacem.openmal.ui.fragments.edit.EditListViewModel
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
 import com.aitgacem.openmal.ui.gotoWorkDetail
+import com.aitgacem.openmal.ui.isColor
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -106,10 +111,13 @@ class DetailFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
         }
-        viewModel.isRefreshing.observe(viewLifecycleOwner){isRefreshing ->
+        viewModel.isRefreshing.observe(viewLifecycleOwner) { isRefreshing ->
             binding.swipeRefresh.isRefreshing = isRefreshing
         }
-        ViewCompat.setTransitionName(binding.workImage, args.workTitle) // For shared element transition
+        ViewCompat.setTransitionName(
+            binding.workImage,
+            args.workTitle
+        ) // For shared element transition
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             val url = String.format(
                 getString(
@@ -213,120 +221,152 @@ class DetailFragment : Fragment() {
 
 
     private fun displayWorkInfo(work: Work, gotoWorkDetail: (View, Work) -> Unit) {
-        with(binding) {
-            // redundantly load image and title for deep links handling
-            Glide.with(this@DetailFragment).load(work.pictureURL).into(workImage)
-            workTitle.text = work.userPreferredTitle
+        // redundantly load image and title for deep links handling
+        Glide.with(this@DetailFragment).load(work.pictureURL).into(binding.workImage)
+        binding.workImage.setOnClickListener {
+            val action = DetailFragmentDirections.viewImages(work.pictures.toTypedArray())
+            findNavController().navigate(action)
+        }
 
-            workImage.setOnClickListener {
-                val action = DetailFragmentDirections.viewImages(work.pictures.toTypedArray())
-                findNavController().navigate(action)
-            }
+        binding.workTitle.text = work.userPreferredTitle
+        val releaseStatusSpannable = SpannableString(
+            getString(
+                when (work) {
+                    is Anime -> {
+                        when (work.releaseStatus) {
+                            ReleaseStatus.FINISHED -> R.string.anime_finished
+                            ReleaseStatus.NOT_YET_RELEASED -> R.string.anime_not_yet_released
+                            ReleaseStatus.CURRENTLY_RELEASING -> R.string.anime_currently_airing
+                            ReleaseStatus.ON_HIATUS -> R.string.on_hiatus
+                            ReleaseStatus.OTHER -> R.string.empty_string
+                        }
+                    }
 
-            topAppBar.menu[1].setIcon(
-                ResourcesCompat.getDrawable(
-                    resources,
-                    if (work.listStatus == null) R.drawable.ic_library_add else R.drawable.ic_library_add_check,
-                    requireContext().theme
-                )
-            )
-            val contentType = resources.getString(
-                when (work.contentType) {
-                    "tv" -> R.string.tv
-                    "ova" -> R.string.ova
-                    "movie" -> R.string.movie
-                    "special" -> R.string.special
-                    "ona" -> R.string.ona
-                    "music" -> R.string.music
-                    "manga" -> R.string.manga
-                    "novel" -> R.string.novel
-                    "one_shot" -> R.string.one_shot
-                    "doujinshi" -> R.string.doujinshi
-                    "manhwa" -> R.string.manhwa
-                    "manhua" -> R.string.manhua
-                    "oel" -> R.string.oel
-                    else -> R.string.other
-                }
-            )
-            binding.contentType.text = contentType
-            work.rank?.let { rankNum ->
-                ranked.text = String.format(resources.getString(R.string.ranked_text), rankNum)
-            }
-            work.popularity?.let { pop ->
-                popularity.text = String.format(resources.getString(R.string.popularity_text), pop)
-            }
-
-            work.members?.let { numMembers ->
-                members.text = String.format(resources.getString(R.string.members_text), numMembers)
-            }
-            work.meanScore?.let { givenScore ->
-                score.text = String.format(resources.getString(R.string.score_text), givenScore)
-            }
-            synopsys.text = work.synopsis
-            work.genres.forEach { genre ->
-                val chip = Chip(requireContext())
-                chip.apply {
-                    text = genre.name
-                    textSize = 12f
-                }
-                binding.genres.addView(chip)
-            }
-            val dateFormat = getDateInstance(DateFormat.MEDIUM)
-            releaseDateTxt.text = String.format(
-                resources.getString(R.string.start_end_date_format),
-                work.startDate?.let { dateFormat.format(convertDateToLong(it)) } ?: "?",
-                work.endDate?.let { dateFormat.format(convertDateToLong(it)) } ?: "?",
-            )
-            if (work.relatedWork.isEmpty()) {
-                relatedSect.hide()
-            } else {
-                work.relatedWork.forEach { pair ->
-                    val (edge, relation) = pair
-                    // inflate a horizontal chip and add it to the related works layout
-                    val horizontalChip = LayoutInflater.from(requireContext())
-                        .inflate(R.layout.anime_horizontal_card, binding.relatedWork, false)
-                    val imageView: ImageView = horizontalChip.findViewById(R.id.anime_image)
-                    val title: TextView = horizontalChip.findViewById(R.id.anime_title)
-                    val relationType: TextView = horizontalChip.findViewById(R.id.relation_type)
-
-                    Glide.with(this@DetailFragment).load(edge.pictureURL).override(200).fitCenter()
-                        .into(imageView)
-                    title.text = edge.userPreferredTitle
-                    relationType.text = relation
-
-                    horizontalChip.transitionName =
-                        edge.userPreferredTitle // Shared element transition
-                    binding.relatedWork.addView(horizontalChip)
-                    horizontalChip.setOnClickListener {
-                        gotoWorkDetail(it, edge)
+                    is Manga -> {
+                        when (work.releaseStatus) {
+                            ReleaseStatus.FINISHED -> R.string.manga_finished
+                            ReleaseStatus.NOT_YET_RELEASED -> R.string.manga_not_yet_released
+                            ReleaseStatus.CURRENTLY_RELEASING -> R.string.manga_currently_publishing
+                            ReleaseStatus.ON_HIATUS -> R.string.on_hiatus
+                            ReleaseStatus.OTHER -> R.string.empty_string
+                        }
                     }
                 }
+            )
+        )
+        val typedValue = when (work.releaseStatus) {
+            ReleaseStatus.CURRENTLY_RELEASING -> resolveColor(R.attr.currently_releasing_color)
+            ReleaseStatus.FINISHED -> resolveColor(R.attr.finished_color)
+            ReleaseStatus.NOT_YET_RELEASED -> resolveColor(R.attr.not_yet_released_color)
+            ReleaseStatus.ON_HIATUS -> resolveColor(R.attr.on_hiatus_color)
+            else -> TypedValue()
+        }
+        if (typedValue.isColor()) {
+            releaseStatusSpannable.setSpan(
+                ForegroundColorSpan(typedValue.data),
+                0,
+                releaseStatusSpannable.length,
+                SPAN_INCLUSIVE_EXCLUSIVE
+            )
+        }
+        binding.releaseStatus.text = releaseStatusSpannable
+
+        binding.topAppBar.menu[1].setIcon(
+            ResourcesCompat.getDrawable(
+                resources,
+                if (work.listStatus == null) R.drawable.ic_library_add else R.drawable.ic_library_add_check,
+                requireContext().theme
+            )
+        )
+        val contentType = resources.getString(
+            when (work.contentType) {
+                "tv" -> R.string.tv
+                "ova" -> R.string.ova
+                "movie" -> R.string.movie
+                "special" -> R.string.special
+                "ona" -> R.string.ona
+                "music" -> R.string.music
+                "manga" -> R.string.manga
+                "novel" -> R.string.novel
+                "one_shot" -> R.string.one_shot
+                "doujinshi" -> R.string.doujinshi
+                "manhwa" -> R.string.manhwa
+                "manhua" -> R.string.manhua
+                "oel" -> R.string.oel
+                else -> R.string.other
             }
-            when (work) {
-                is Anime -> displayAnimeInfo(work)
-                is Manga -> displayMangaInfo(work)
+        )
+        binding.contentType.text = contentType
+        work.rank?.let { rankNum ->
+            binding.ranked.text = String.format(resources.getString(R.string.ranked_text), rankNum)
+        }
+        work.popularity?.let { pop ->
+            binding.popularity.text =
+                String.format(resources.getString(R.string.popularity_text), pop)
+        }
+
+        work.members?.let { numMembers ->
+            binding.members.text =
+                String.format(resources.getString(R.string.members_text), numMembers)
+        }
+        work.meanScore?.let { givenScore ->
+            binding.score.text = String.format(resources.getString(R.string.score_text), givenScore)
+        }
+        binding.synopsys.text = work.synopsis
+        work.genres.forEach { genre ->
+            val chip = Chip(requireContext())
+            chip.apply {
+                text = genre.name
+                textSize = 12f
             }
-            viewModel.isLogged.observe(viewLifecycleOwner) { isLogged ->
-                if (isLogged == null || !isLogged) {
-                    handleNonLogged()
-                } else {
-                    showListStatus(work)
+            binding.genres.addView(chip)
+        }
+        val dateFormat = getDateInstance(DateFormat.MEDIUM)
+        binding.releaseDateTxt.text = String.format(
+            resources.getString(R.string.start_end_date_format),
+            work.startDate?.let { dateFormat.format(convertDateToLong(it)) } ?: "?",
+            work.endDate?.let { dateFormat.format(convertDateToLong(it)) } ?: "?",
+        )
+        if (work.relatedWork.isEmpty()) {
+            binding.relatedSect.hide()
+        } else {
+            work.relatedWork.forEach { pair ->
+                val (edge, relation) = pair
+                // inflate a horizontal chip and add it to the related works layout
+                val horizontalChip = LayoutInflater.from(requireContext())
+                    .inflate(R.layout.anime_horizontal_card, binding.relatedWork, false)
+                val imageView: ImageView = horizontalChip.findViewById(R.id.anime_image)
+                val title: TextView = horizontalChip.findViewById(R.id.anime_title)
+                val relationType: TextView = horizontalChip.findViewById(R.id.relation_type)
+
+                Glide.with(this@DetailFragment).load(edge.pictureURL).override(200).fitCenter()
+                    .into(imageView)
+                title.text = edge.userPreferredTitle
+                relationType.text = relation
+
+                horizontalChip.transitionName =
+                    edge.userPreferredTitle // Shared element transition
+                binding.relatedWork.addView(horizontalChip)
+                horizontalChip.setOnClickListener {
+                    gotoWorkDetail(it, edge)
                 }
             }
         }
+        when (work) {
+            is Anime -> displayAnimeInfo(work)
+            is Manga -> displayMangaInfo(work)
+        }
+        viewModel.isLogged.observe(viewLifecycleOwner) { isLogged ->
+            if (isLogged == null || !isLogged) {
+                handleNonLogged()
+            } else {
+                showListStatus(work)
+            }
+        }
+
     }
 
-
     private fun displayAnimeInfo(work: Anime) {
-        binding.releaseStatus.text = getString(
-            when (work.releaseStatus) {
-                ReleaseStatus.FINISHED -> R.string.anime_finished
-                ReleaseStatus.NOT_YET_RELEASED -> R.string.anime_not_yet_released
-                ReleaseStatus.CURRENTLY_RELEASING -> R.string.anime_currently_airing
-                ReleaseStatus.ON_HIATUS -> R.string.on_hiatus
-                ReleaseStatus.OTHER -> R.string.empty_string
-            }
-        )
         binding.rateTheWork.text = getString(R.string.rate_anime)
         binding.releasePeriod.text = getString(R.string.air_period)
         binding.animeStartSeason.text = work.startSeason?.let { season ->
@@ -381,20 +421,15 @@ class DetailFragment : Fragment() {
                 ?: resources.getString(R.string.unknown)
     }
 
+    private fun resolveColor(color: Int): TypedValue {
+        val tv = TypedValue()
+        requireContext().theme.resolveAttribute(color, tv, true)
+        return tv
+    }
 
     private fun displayMangaInfo(work: Manga) {
         with(binding) {
-            releaseStatus.text = resources.getString(
-                when (work.releaseStatus) {
-                    ReleaseStatus.FINISHED -> R.string.manga_finished
-                    ReleaseStatus.NOT_YET_RELEASED -> R.string.manga_not_yet_released
-                    ReleaseStatus.CURRENTLY_RELEASING -> R.string.manga_currently_publishing
-                    ReleaseStatus.ON_HIATUS -> R.string.on_hiatus
-                    ReleaseStatus.OTHER -> R.string.empty_string
-                }
-            )
             binding.rateTheWork.text = resources.getString(R.string.rate_manga)
-
             releasePeriod.text = resources.getString(R.string.publishing_period)
             numReleases.text = String.format(resources.getString(R.string.manga_chapters_count),
                 work.numReleases.takeUnless { it == 0 } ?: "?")

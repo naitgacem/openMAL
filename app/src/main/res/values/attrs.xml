@@ -3,4 +3,9 @@
     <attr name="filter_chip_style" format="reference"/>
     <attr name="settings_title_font_size" format="dimension"/>
     <attr name="settings_subtitle_font_size" format="dimension"/>
+
+    <attr name="currently_releasing_color" format="color"/>
+    <attr name="finished_color" format="color"/>
+    <attr name="not_yet_released_color" format="color"/>
+    <attr name="on_hiatus_color" format="color"/>
 </resources>
