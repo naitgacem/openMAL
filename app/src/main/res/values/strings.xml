@@ -29,7 +29,8 @@
     <string name="manga_not_yet_released">Not yet published</string>
     <string name="popularity_text">Popularity #%1$d</string>
     <string name="members_text">Members %1$d </string>
-    <string name="score_text">Score: %1$.2f</string>
+    <string name="score_text">%1$.2f</string>
+    <string name="score_prefix">Score:\ </string>
     <string name="start_end_date_format">%1$s - %2$s</string>
     <string name="broadcast_time_format">%1s, %2s JST</string>
     <string name="unknown">Unknown</string>

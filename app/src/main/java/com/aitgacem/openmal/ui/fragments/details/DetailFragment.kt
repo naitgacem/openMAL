@@ -8,6 +8,7 @@ import android.icu.text.MessageFormat
 import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
@@ -25,6 +26,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
+import androidx.core.text.color
 import androidx.core.view.ViewCompat
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -43,6 +45,7 @@ import com.aitgacem.openmal.ui.formattedString
 import com.aitgacem.openmal.ui.fragments.edit.EditListFragmentDirections
 import com.aitgacem.openmal.ui.fragments.edit.EditListViewModel
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
+import com.aitgacem.openmal.ui.getScoreColor
 import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.isColor
 import com.bumptech.glide.Glide
@@ -61,7 +64,6 @@ import openmal.domain.Manga
 import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.ReleaseStatus
-import openmal.domain.Season
 import openmal.domain.Work
 import java.text.DateFormat.getDateInstance
 
@@ -129,7 +131,6 @@ class DetailFragment : Fragment() {
                     }
                 ), args.id
             )
-
             when (menuItem.itemId) {
                 R.id.share_btn -> {
                     val sendIntent = Intent().apply {
@@ -312,7 +313,13 @@ class DetailFragment : Fragment() {
                 String.format(resources.getString(R.string.members_text), numMembers)
         }
         work.meanScore?.let { givenScore ->
-            binding.score.text = String.format(resources.getString(R.string.score_text), givenScore)
+            val prefix = getString(R.string.score_prefix)
+            val score = String.format(getString(R.string.score_text), givenScore)
+            val spannable = SpannableStringBuilder(prefix)
+                .color(getScoreColor(requireContext(), givenScore)){
+                    append(score)
+                }
+            binding.score.text =  spannable
         }
         binding.synopsys.text = work.synopsis
         work.genres.forEach { genre ->

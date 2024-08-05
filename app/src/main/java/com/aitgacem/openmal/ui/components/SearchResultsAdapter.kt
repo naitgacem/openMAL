@@ -1,6 +1,9 @@
 package com.aitgacem.openmal.ui.components
 
 import android.content.Context
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.ui.formattedString
+import com.aitgacem.openmal.ui.getScoreColor
 import com.bumptech.glide.RequestManager
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
@@ -77,10 +81,17 @@ class SearchResultViewHolder(itemView: View, val gotoDetail: (View, Work) -> Uni
 
         titleTextView.text = item.userPreferredTitle
         if (item.meanScore != null && item.meanScore!! > 0) {
-            ratingTextView.text = String.format(
+            val rating = String.format(
                 itemView.context.getString(R.string.rating_star),
                 item.meanScore
             )
+
+            ratingTextView.text = SpannableString.valueOf(rating).apply {
+                setSpan(
+                    ForegroundColorSpan(getScoreColor(itemView.context, item.meanScore!!)),
+                    0, rating.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+                )
+            }
             ratingTextView.visibility = View.VISIBLE
         } else {
             ratingTextView.visibility = View.GONE

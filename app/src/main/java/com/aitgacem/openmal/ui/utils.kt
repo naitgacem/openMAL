@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -82,5 +83,22 @@ fun Pair<Season, Int>.formattedString(context: Context): String {
             }
         ),
         this.second.toString()
+    )
+}
+
+fun getScoreColor(context: Context, score: Float): Int {
+    return context.getColor(
+        when(score.toInt()){
+            in 0 until 1 -> R.color.color_1_red
+            in 1 until 2 -> R.color.color_2_chili_red
+            in 2 until 3 -> R.color.color_3_mahogany
+            in 3 until 4 -> R.color.color_4_burnt_orange
+            in 4 until 5 -> R.color.color_5_golden_brown
+            in 5 until 6 -> R.color.color_6_avocado
+            in 6 until 7 -> R.color.color_7_kelly_green
+            in 7 until 8 -> R.color.color_8_lime_green
+            in 8 until 9 -> R.color.color_9_sgbus_green
+            else -> R.color.color_10_green
+        }
     )
 }

@@ -9,7 +9,18 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="currently_releasing_color">#651FFF</color>
-    <color name="finished_color">#43A047</color>
+    <color name="finished_color">#00FF00</color>
     <color name="not_yet_released_color">#FFA000</color>
     <color name="on_hiatus_color">#C2185B</color>
+
+    <color name="color_1_red">#FF0000</color>
+    <color name="color_2_chili_red">#E31C00</color>
+    <color name="color_3_mahogany">#C63900</color>
+    <color name="color_4_burnt_orange">#AA5500</color>
+    <color name="color_5_golden_brown">#8E7100</color>
+    <color name="color_6_avocado">#718E00</color>
+    <color name="color_7_kelly_green">#55AA00</color>
+    <color name="color_8_lime_green">#39C600</color>
+    <color name="color_9_sgbus_green">#1CE300</color>
+    <color name="color_10_green">#00FF00</color>
 </resources>
