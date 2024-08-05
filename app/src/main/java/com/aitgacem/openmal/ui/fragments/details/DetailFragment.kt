@@ -529,7 +529,7 @@ class DetailFragment : Fragment() {
 
     private fun onRateButtonClick(view: View) {
         val alert =
-            MaterialAlertDialogBuilder(requireContext()).setPositiveButton("Confirm") { dialog, _ ->
+            MaterialAlertDialogBuilder(requireContext()).setPositiveButton(getString(R.string.confirm)) { dialog, _ ->
                 val ratingBar: RatingBar? = (dialog as? AlertDialog)?.findViewById(R.id.rating_bar)
                 ratingBar?.let {
                     val score = it.rating

@@ -202,4 +202,5 @@
     <string name="summer">Summer</string>
     <string name="fall">Fall</string>
     <string name="no_results_found">No results found :(</string>
+    <string name="confirm">Confirm</string>
 </resources>
