@@ -12,6 +12,7 @@ import com.aitgacem.openmalnet.data.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import openmal.domain.Character
 import openmal.domain.MediaType
 import openmal.domain.NetworkResult
 import openmal.domain.Work
@@ -35,6 +36,7 @@ class DetailViewModel @Inject constructor(
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     val state = MutableLiveData<NetworkResult<Work>>()
+    val characters = MutableLiveData<NetworkResult<List<Character>>>()
     val work = MutableLiveData<Work>()
 
     init {
@@ -51,8 +53,13 @@ class DetailViewModel @Inject constructor(
             }
             _isRefreshing.postValue(false)
             state.postValue(result)
-            if(result is NetworkResult.Success){
+            if (result is NetworkResult.Success) {
                 work.postValue(result.data)
+                val chars = when (workType) {
+                    MediaType.ANIME -> animeRepository.getAnimeCharacters(result.data.id)
+                    else -> mangaRepository.getMangaCharacters(result.data.id)
+                }
+                characters.postValue(chars)
             }
         }
     }

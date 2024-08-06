@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scroll_view">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/character_image"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="10dp"
+                android:contentDescription="@string/character_image"
+                android:scaleType="fitStart"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/anime_image" />
+
+            <TextView
+                android:id="@+id/character_name"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/character_image"
+                app:layout_constraintTop_toTopOf="@+id/character_image"
+                tools:text="Sasha Blouse" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/character_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/character_image" />
+
+            <TextView
+                android:id="@+id/character_age"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/character_name"
+                app:layout_constraintTop_toBottomOf="@+id/character_name"
+                tools:text="Age: 16" />
+
+            <TextView
+                android:id="@+id/character_gender"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/character_name"
+                app:layout_constraintTop_toBottomOf="@+id/character_age"
+                tools:text="Gender: Female" />
+
+            <TextView
+                android:id="@+id/description_title"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/character_image" />
+
+            <TextView
+                android:id="@+id/description_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintTop_toBottomOf="@id/description_title"
+                tools:text="Initial Height: 168cm\nAffiliations: Survey Corps\n\nOriginally from Dauper, a remote and scarcely populated village of hunters located in a mountain forest in the southern area of Wall Rose. Sasha joined the military as a cadet of the 104th Training Corps, where she ranked 9th upon graduation. She is highly skilled with a bow and arrow and has uncanny intuition, but her eccentricity and unconventional methods make her a poor fit for group operations.\n\nSasha is a friendly and fun-loving girl. She speaks with a local accent from her home village, but initially hid it out of embarrassment by using overly formal and polite speech. She is a constant food hoarder and is known to have an incredible appetite; eating provided her with considerable gratification and relief, especially during times of great stress, and food was often the only thing on her mind when at ease. \n\nNote: Sasha Blouse is the official English translation by Kodansha." />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</LinearLayout>

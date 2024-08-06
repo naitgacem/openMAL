@@ -38,8 +38,10 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentDetailBinding
+import com.aitgacem.openmal.ui.components.CharacterListAdapter
 import com.aitgacem.openmal.ui.convertDateToLong
 import com.aitgacem.openmal.ui.formattedString
 import com.aitgacem.openmal.ui.fragments.edit.EditListFragmentDirections
@@ -318,10 +320,10 @@ class DetailFragment : Fragment() {
             val prefix = getString(R.string.score_prefix)
             val score = String.format(getString(R.string.score_text), givenScore)
             val spannable = SpannableStringBuilder(prefix)
-                .color(getScoreColor(requireContext(), givenScore)){
+                .color(getScoreColor(requireContext(), givenScore)) {
                     append(score)
                 }
-            binding.score.text =  spannable
+            binding.score.text = spannable
         }
         binding.synopsys.text = work.synopsis
         work.genres.forEach { genre ->
@@ -332,6 +334,20 @@ class DetailFragment : Fragment() {
             }
             binding.genres.addView(chip)
         }
+        // characters of the work
+        val characterAdapter = CharacterListAdapter { id ->
+            val modal = CharacterDetailsBottomSheet(id)
+            modal.show(childFragmentManager, CharacterDetailsBottomSheet.TAG)
+        }
+        binding.charactersRv.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.charactersRv.adapter = characterAdapter
+        viewModel.characters.observe(viewLifecycleOwner) { result ->
+            if (result is NetworkResult.Success) {
+                characterAdapter.submitList(result.data)
+            }
+        }
+
         val dateFormat = getDateInstance(DateFormat.MEDIUM)
         binding.releaseDateTxt.text = String.format(
             resources.getString(R.string.start_end_date_format),
@@ -392,7 +408,12 @@ class DetailFragment : Fragment() {
                 ContentRating.UNKNOWN -> R.string.unknown
             }
         )
-        binding.contentRating.text = SpannableStringBuilder().color(getContentRatingColor(requireContext(), work.contentRating)) {
+        binding.contentRating.text = SpannableStringBuilder().color(
+            getContentRatingColor(
+                requireContext(),
+                work.contentRating
+            )
+        ) {
             append(contentRatingString)
         }
         binding.numReleases.text = MessageFormat.format(
@@ -441,6 +462,7 @@ class DetailFragment : Fragment() {
         binding.animeStudios.text =
             work.studios.joinToString { it.name }.takeUnless { it.isBlank() }
                 ?: resources.getString(R.string.unknown)
+
     }
 
     private fun resolveColor(color: Int): TypedValue {

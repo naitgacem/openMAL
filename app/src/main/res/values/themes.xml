@@ -1,4 +1,16 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
+
+    <style name="ModalBottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="behavior_halfExpandedRatio">0.4</item>
+        <item name="behavior_fitToContents">true</item>
+        <item name="state_collapsed">true</item>
+        <item name="behavior_saveFlags">all</item>
+        <item name="behavior_peekHeight">400dp</item>
+    </style>
+    <style name="ModalBottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheet</item>
+    </style>
+
     <style name="Theme.OpenMAL" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
         <item name="filter_chip_style">@style/Widget.Material3.Chip.Filter</item>
         <item name="settings_title_font_size">16sp</item>
@@ -7,5 +19,6 @@
         <item name="finished_color">@color/finished_color</item>
         <item name="not_yet_released_color">@color/not_yet_released_color</item>
         <item name="on_hiatus_color">@color/on_hiatus_color</item>
+        <item name="bottomSheetDialogTheme">@style/ModalBottomSheetDialog</item>
     </style>
 </resources>

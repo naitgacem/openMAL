@@ -1,0 +1,15 @@
+query mangaCharacters ($id: Int) {
+    Media (type: MANGA, idMal: $id,) {
+        characters{
+            nodes{
+                id
+                name {
+                    full
+                }
+                image {
+                    medium
+                }
+            }
+        }
+    }
+}

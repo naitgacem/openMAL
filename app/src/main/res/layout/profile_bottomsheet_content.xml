@@ -31,24 +31,24 @@
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/filter_title"
+            android:id="@+id/sort_title"
             android:text="@string/title"/>
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/filter_score"
+            android:id="@+id/sort_score"
             android:text="@string/score" />
 
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/filter_updated"
+            android:id="@+id/sort_last_updated"
             android:text="@string/last_updated" />
 
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/filter_start"
+            android:id="@+id/sort_start_date"
             android:text="@string/start_date" />
 
     </RadioGroup>

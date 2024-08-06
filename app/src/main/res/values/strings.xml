@@ -210,4 +210,12 @@
     <string name="r_rating">R - 17+ (Violence &amp; Profanity)</string>
     <string name="r_plus_rating">R+ - Profanity &amp; Mild Nudity</string>
     <string name="rx_rating">Rx - Hentai</string>
+    <string name="synopsys">Synopsys</string>
+    <string name="characters">Characters</string>
+    <string name="character_image">Character image</string>
+    <string name="description">Description</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="character_age">Age: %1s</string>
+    <string name="character_gender">Gender: %1s</string>
 </resources>

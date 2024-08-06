@@ -17,7 +17,7 @@ import openmal.domain.SortType
 
 
 @AndroidEntryPoint
-class ModalBottomSheet() : BottomSheetDialogFragment() {
+class SortingBottomSheet() : BottomSheetDialogFragment() {
     constructor(mediaType: MediaType) : this() {
         this.mediaType = mediaType
     }
@@ -44,19 +44,19 @@ class ModalBottomSheet() : BottomSheetDialogFragment() {
         val radioGroup: RadioGroup = view.findViewById(R.id.sort_options)
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.filter_title -> {
+                R.id.sort_title -> {
                     viewModel.changeSorting(SortType.TITLE)
                 }
 
-                R.id.filter_score -> {
+                R.id.sort_score -> {
                     viewModel.changeSorting(SortType.SCORE)
                 }
 
-                R.id.filter_updated -> {
+                R.id.sort_last_updated -> {
                     viewModel.changeSorting(SortType.LAST_UPDATE)
                 }
 
-                R.id.filter_start -> {
+                R.id.sort_start_date -> {
                     viewModel.changeSorting(SortType.START_DATE)
                 }
             }

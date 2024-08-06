@@ -18,7 +18,7 @@ import javax.inject.Named
 object RetrofitModule {
     @Provides
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @Named("okhttp") okHttpClient: OkHttpClient,
         factory: GsonConverterFactory
     ): Retrofit {
         return Retrofit.Builder()
@@ -27,6 +27,7 @@ object RetrofitModule {
             .addConverterFactory(factory)
             .build()
     }
+
     @Provides
     fun provideConverterFactory(): GsonConverterFactory {
         return GsonConverterFactory.create()
@@ -40,7 +41,7 @@ object RetrofitModule {
         return Interceptor { chain ->
             val request = chain.request().newBuilder()
                 .addHeader("X-MAL-CLIENT-ID", apiKey)
-            if(!accessToken.isNullOrEmpty()){
+            if (!accessToken.isNullOrEmpty()) {
                 request.addHeader("Authorization", "Bearer $accessToken")
             }
             chain.proceed(request.build())
@@ -48,6 +49,7 @@ object RetrofitModule {
     }
 
     @Provides
+    @Named("okhttp")
     fun provideOkHttpClient(
         interceptor: Interceptor,
         authHandler: AuthHandler,
@@ -61,4 +63,13 @@ object RetrofitModule {
             .build()
     }
 
+    @Provides
+    @Named("apollo")
+    fun provideOkHttpClientApollo(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
+            })
+            .build()
+    }
 }

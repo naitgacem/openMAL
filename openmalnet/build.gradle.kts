@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.apollo)
 }
 
 android {
@@ -33,19 +34,27 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    apollo {
+        service("service") {
+            packageName.set("com.aitgacem.openmalnet.models")
+            introspection {
+                endpointUrl.set("https://graphql.anilist.co/graphql")
+                schemaFile.set(file("src/main/graphql/schema.graphqls"))
+            }
+        }
+    }
 }
 
 dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.datastore.preferences)
-   // implementation(libs.androidx.appcompat)
-   // implementation(libs.material)
     implementation(libs.gson)
     implementation(libs.retrofit)
     implementation(libs.gson.retrofit)
     implementation(libs.http.logging.interceptor)
     implementation(libs.hilt.android)
+    implementation(libs.apollo.runtime)
     implementation(project(":domain"))
     ksp (libs.hilt.compiler)
     testImplementation(libs.junit)

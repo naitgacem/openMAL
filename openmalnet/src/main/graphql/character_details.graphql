@@ -1,0 +1,14 @@
+query characterDetails ($id: Int) {
+    Character(id: $id) {
+        id
+        name{
+            full
+        }
+        image {
+            medium
+        }
+        description(asHtml:true)
+        gender
+        age
+    }
+}

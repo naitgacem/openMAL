@@ -122,8 +122,8 @@ class ProfileFragmentContent() : Fragment() {
         }
 
         val onFilterButtonClicked = { _: View ->
-            val modalBottomSheet = ModalBottomSheet(viewmodel.mediaType)
-            modalBottomSheet.show(childFragmentManager, ModalBottomSheet.TAG)
+            val modalBottomSheet = SortingBottomSheet(viewmodel.mediaType)
+            modalBottomSheet.show(childFragmentManager, SortingBottomSheet.TAG)
         }
         val headerAdapter = ProfileHeaderAdapter(
             mediaType = viewmodel.mediaType,

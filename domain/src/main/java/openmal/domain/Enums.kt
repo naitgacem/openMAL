@@ -50,3 +50,9 @@ enum class PreferredTitleStyle {
     PREFER_JAPANESE,
     PREFER_ROMAJI
 }
+
+enum class Gender {
+    Male,
+    Female,
+    Unknown
+}

@@ -1,10 +1,13 @@
 package com.aitgacem.openmalnet.data
 
 
+import com.aitgacem.openmalnet.api.anilist.CharacterService
 import com.aitgacem.openmalnet.api.mal.MangaService
+import com.aitgacem.openmalnet.models.MangaCharactersQuery
 import com.aitgacem.openmalnet.models.MangaForDetails
 import com.aitgacem.openmalnet.models.MangaListForRanking
 import kotlinx.coroutines.flow.firstOrNull
+import openmal.domain.Character
 import openmal.domain.NetworkResult
 import openmal.domain.PreferredTitleStyle
 import openmal.domain.Work
@@ -12,6 +15,7 @@ import javax.inject.Inject
 
 class MangaRepository @Inject constructor(
     private val mangaService: MangaService,
+    private val characterService: CharacterService,
     private val prefs: UserPreferencesRepository,
 ) {
     private val listFields = "id,title,main_picture,alternative_titles"
@@ -21,13 +25,31 @@ class MangaRepository @Inject constructor(
         return getRankingManga("manga")
     }
 
+    suspend fun getMangaCharacters(id: Int): NetworkResult<List<Character>> {
+        val result: NetworkResult<MangaCharactersQuery.Data> = handleGraphQlApi {
+            characterService.getMangaCharacters(id)
+        }
+        return when (result) {
+            is NetworkResult.Error -> NetworkResult.Error(result.code, result.apiError)
+            is NetworkResult.Exception -> NetworkResult.Exception(result.e)
+            is NetworkResult.Success -> {
+                return NetworkResult.Success(result.data.Media?.characters?.nodes?.map { node ->
+                    Character(
+                        id = node!!.id, name = node.name?.full!!, imageURL = node.image?.medium
+                    )
+                } ?: listOf())
+            }
+        }
+    }
+
     suspend fun getTopNovels(
     ): NetworkResult<List<Work>> {
         return getRankingManga("novels")
     }
 
     private suspend fun getRankingManga(rankingType: String): NetworkResult<List<Work>> {
-        val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
+        val preferredTitleStyle =
+            prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         val nsfw = prefs.isNsfwEnabledFlow.firstOrNull() ?: false
         val result: NetworkResult<MangaListForRanking> = handleApi {
             mangaService.getMangaRanking(
@@ -64,7 +86,8 @@ class MangaRepository @Inject constructor(
     suspend fun getMangaDetails(
         id: Int,
     ): NetworkResult<Work> {
-        val preferredTitleStyle = prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
+        val preferredTitleStyle =
+            prefs.preferredTitleStyle.firstOrNull() ?: PreferredTitleStyle.PREFER_DEFAULT
         val result: NetworkResult<MangaForDetails> = handleApi {
             mangaService.getMangaDetails(
                 id = id,
@@ -72,7 +95,12 @@ class MangaRepository @Inject constructor(
             )
         }
         return when (result) {
-            is NetworkResult.Success -> NetworkResult.Success(result.data.toDetailsWork(preferredTitleStyle))
+            is NetworkResult.Success -> NetworkResult.Success(
+                result.data.toDetailsWork(
+                    preferredTitleStyle
+                )
+            )
+
             is NetworkResult.Error -> NetworkResult.Error(result.code, result.code.toErrorEnum())
             is NetworkResult.Exception -> NetworkResult.Exception(result.e)
         }
