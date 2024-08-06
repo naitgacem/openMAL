@@ -45,6 +45,7 @@ import com.aitgacem.openmal.ui.formattedString
 import com.aitgacem.openmal.ui.fragments.edit.EditListFragmentDirections
 import com.aitgacem.openmal.ui.fragments.edit.EditListViewModel
 import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
+import com.aitgacem.openmal.ui.getContentRatingColor
 import com.aitgacem.openmal.ui.getScoreColor
 import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.isColor
@@ -59,6 +60,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import openmal.domain.Anime
+import openmal.domain.ContentRating
 import openmal.domain.ListStatus
 import openmal.domain.Manga
 import openmal.domain.MediaType
@@ -379,7 +381,20 @@ class DetailFragment : Fragment() {
         binding.rateTheWork.text = getString(R.string.rate_anime)
         binding.releasePeriod.text = getString(R.string.air_period)
         binding.animeStartSeason.text = work.startSeason?.formattedString(requireContext())
-        binding.contentRating.text = work.contentRating.description
+        val contentRatingString = getString(
+            when (work.contentRating) {
+                ContentRating.G -> R.string.g_rating
+                ContentRating.PG -> R.string.pg_rating
+                ContentRating.PG_13 -> R.string.pg_13_rating
+                ContentRating.R -> R.string.r_rating
+                ContentRating.R_PLUS -> R.string.r_plus_rating
+                ContentRating.RX -> R.string.rx_rating
+                ContentRating.UNKNOWN -> R.string.unknown
+            }
+        )
+        binding.contentRating.text = SpannableStringBuilder().color(getContentRatingColor(requireContext(), work.contentRating)) {
+            append(contentRatingString)
+        }
         binding.numReleases.text = MessageFormat.format(
             getString(R.string.anime_episodes_and_rating), mapOf(
                 "episodes" to work.numReleases, "duration" to work.avgEpDuration / 60

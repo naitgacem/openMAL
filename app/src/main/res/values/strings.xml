@@ -203,4 +203,11 @@
     <string name="fall">Fall</string>
     <string name="no_results_found">No results found :(</string>
     <string name="confirm">Confirm</string>
+
+    <string name="g_rating">G - All Ages</string>
+    <string name="pg_rating">PG - Children</string>
+    <string name="pg_13_rating">PG-13 - Teens 13 and Older</string>
+    <string name="r_rating">R - 17+ (Violence &amp; Profanity)</string>
+    <string name="r_plus_rating">R+ - Profanity &amp; Mild Nudity</string>
+    <string name="rx_rating">Rx - Hentai</string>
 </resources>
