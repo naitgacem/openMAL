@@ -47,8 +47,6 @@ class ProfileViewModel @Inject constructor(
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     init {
-        val list: List<Work> = savedStateHandle["list"] ?: emptyList()
-        _workList.value = NetworkResult.Success(list)
         refresh()
         refreshIfNeeded()
     }
@@ -71,9 +69,6 @@ class ProfileViewModel @Inject constructor(
                 }
             }
             _workList.postValue(result)
-            if (result is NetworkResult.Success) {
-                savedStateHandle["list"] = result.data
-            }
             _isRefreshing.value = false
         }
     }
