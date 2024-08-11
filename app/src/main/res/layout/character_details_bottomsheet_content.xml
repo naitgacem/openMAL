@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scroll_view">
@@ -90,5 +90,5 @@
                 app:layout_constraintTop_toBottomOf="@id/description_title"
                 tools:text="Initial Height: 168cm\nAffiliations: Survey Corps\n\nOriginally from Dauper, a remote and scarcely populated village of hunters located in a mountain forest in the southern area of Wall Rose. Sasha joined the military as a cadet of the 104th Training Corps, where she ranked 9th upon graduation. She is highly skilled with a bow and arrow and has uncanny intuition, but her eccentricity and unconventional methods make her a poor fit for group operations.\n\nSasha is a friendly and fun-loving girl. She speaks with a local accent from her home village, but initially hid it out of embarrassment by using overly formal and polite speech. She is a constant food hoarder and is known to have an incredible appetite; eating provided her with considerable gratification and relief, especially during times of great stress, and food was often the only thing on her mind when at ease. \n\nNote: Sasha Blouse is the official English translation by Kodansha." />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

@@ -12,7 +12,6 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.CharacterDetailsBottomsheetContentBinding
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import openmal.domain.Gender
@@ -21,7 +20,7 @@ import openmal.domain.NetworkResult
 @AndroidEntryPoint
 class CharacterDetailsBottomSheet() : BottomSheetDialogFragment() {
     companion object {
-        const val TAG  = "CharacterDetailsBottomSheet"
+        const val TAG = "CharacterDetailsBottomSheet"
     }
     constructor(id: Int) : this() {
         this.id = id
@@ -46,10 +45,6 @@ class CharacterDetailsBottomSheet() : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.scrollView.setOnScrollChangeListener { v, _, _, _, _ ->
-            (dialog as BottomSheetDialog).behavior.isHideable = !v.canScrollVertically(-1)
-        }
-
         viewModel.character.observe(requireParentFragment().viewLifecycleOwner) { result ->
             if (result is NetworkResult.Success) {
                 val character = result.data
