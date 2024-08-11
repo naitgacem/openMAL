@@ -31,11 +31,6 @@ class CharacterListAdapter(
             onItemClicked(character.id)
         }
         holder.nameTextView.text = character.name
-        val cornerRadius = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            10f,
-            holder.itemView.context.resources.displayMetrics
-        )
         Glide.with(holder.itemView.context)
             .load(character.imageURL)
             .into(holder.imageView)

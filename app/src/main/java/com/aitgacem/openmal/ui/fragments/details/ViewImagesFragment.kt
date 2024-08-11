@@ -1,7 +1,6 @@
 package com.aitgacem.openmal.ui.fragments.details
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -19,8 +18,6 @@ import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentViewImagesBinding
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.transition.MaterialSharedAxis
 import com.ortiz.touchview.TouchImageView
 
@@ -117,18 +114,7 @@ class ImageViewAdapter :
         val context = holder.itemView.context
         val url = list[position]
         val imageView = holder.image
-        Glide.with(context).load(url)
-            .into(object : CustomTarget<Drawable?>() {
-                override fun onResourceReady(
-                    resource: Drawable,
-                    transition: Transition<in Drawable?>?
-                ) {
-                    imageView.setImageDrawable(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) = Unit
-
-            })
+        Glide.with(context).load(url).into(imageView)
     }
 
     override fun getItemCount(): Int {

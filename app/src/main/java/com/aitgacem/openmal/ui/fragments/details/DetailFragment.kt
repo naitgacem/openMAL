@@ -52,6 +52,7 @@ import com.aitgacem.openmal.ui.getScoreColor
 import com.aitgacem.openmal.ui.gotoWorkDetail
 import com.aitgacem.openmal.ui.isColor
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialContainerTransform
@@ -62,6 +63,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import openmal.domain.Anime
+import openmal.domain.Character
 import openmal.domain.ContentRating
 import openmal.domain.ListStatus
 import openmal.domain.Manga
@@ -199,7 +201,9 @@ class DetailFragment : Fragment() {
             }
             true
         }
-        Glide.with(this).load(args.imageUrl.toString()).into(binding.workImage)
+        Glide.with(this).load(args.imageUrl)
+            .transition(DrawableTransitionOptions.withCrossFade(0)) // disable transition to avoid visual change
+            .into(binding.workImage)
         binding.topAppBar.setNavigationOnClickListener { findNavController().popBackStack() }
         viewModel.state.observe(viewLifecycleOwner) { networkResult ->
             when (networkResult) {
@@ -229,7 +233,7 @@ class DetailFragment : Fragment() {
 
     private fun displayWorkInfo(work: Work, gotoWorkDetail: (View, Work) -> Unit) {
         // redundantly load image and title for deep links handling
-        Glide.with(this@DetailFragment).load(work.pictureURL).into(binding.workImage)
+        Glide.with(this).load(work.pictureURL).into(binding.workImage)
         binding.workImage.setOnClickListener {
             val action = DetailFragmentDirections.viewImages(work.pictures.toTypedArray())
             findNavController().navigate(action)
@@ -342,6 +346,11 @@ class DetailFragment : Fragment() {
         binding.charactersRv.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.charactersRv.adapter = characterAdapter
+        characterAdapter.submitList(
+            buildList(5) {
+                Character(0, "")
+            }
+        )
         viewModel.characters.observe(viewLifecycleOwner) { result ->
             if (result is NetworkResult.Success) {
                 characterAdapter.submitList(result.data)
