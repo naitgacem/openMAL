@@ -346,14 +346,14 @@ class DetailFragment : Fragment() {
         binding.charactersRv.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.charactersRv.adapter = characterAdapter
-        characterAdapter.submitList(
-            buildList(5) {
-                Character(0, "")
-            }
-        )
         viewModel.characters.observe(viewLifecycleOwner) { result ->
-            if (result is NetworkResult.Success) {
+            if (result is NetworkResult.Success && result.data.isNotEmpty()) {
+                binding.charactersRv.show()
                 characterAdapter.submitList(result.data)
+            } else {
+                binding.charactersRv.hide()
+                binding.charactersDivider.hide()
+                binding.charactersTitleTextview.hide()
             }
         }
 

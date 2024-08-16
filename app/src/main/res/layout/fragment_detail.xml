@@ -311,6 +311,7 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:id="@+id/characters_divider"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginVertical="16dp" />
 
@@ -318,6 +319,7 @@
                     style="@style/TextAppearance.Material3.TitleMedium"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:id="@+id/characters_title_textview"
                     android:paddingStart="10dp"
                     android:layout_marginBottom="10dp"
                     android:text="@string/characters" />
@@ -332,7 +334,8 @@
                     tools:itemCount="5"
                     android:nestedScrollingEnabled="false"
                     tools:listitem="@layout/anime_card"
-                    tools:orientation="horizontal" />
+                    tools:orientation="horizontal"
+                    android:visibility="gone"/>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
