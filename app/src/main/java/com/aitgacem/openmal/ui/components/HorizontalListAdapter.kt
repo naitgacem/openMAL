@@ -4,12 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aitgacem.openmal.R
+import com.aitgacem.openmal.ui.HideProgressBar
 import com.bumptech.glide.RequestManager
 import openmal.domain.Work
 
@@ -37,6 +39,7 @@ class HorizontalListAdapter(private val glide: RequestManager, private val onCli
         RecyclerView.ViewHolder(itemView) {
         private val imageView: ImageView = itemView.findViewById(R.id.anime_image)
         private val textView: TextView = itemView.findViewById(R.id.anime_title)
+        private val progressBar: ProgressBar = itemView.findViewById(R.id.progress_bar)
         private var currentItem: Work? = null
 
         init {
@@ -52,6 +55,7 @@ class HorizontalListAdapter(private val glide: RequestManager, private val onCli
             currentItem = item
             glide
                 .load(item.pictureURL)
+                .addListener(HideProgressBar(progressBar))
                 .into(imageView)
             textView.text = item.userPreferredTitle
         }

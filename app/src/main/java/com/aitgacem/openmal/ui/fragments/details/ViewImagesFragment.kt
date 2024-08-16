@@ -6,18 +6,22 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.FragmentViewImagesBinding
+import com.aitgacem.openmal.ui.HideProgressBar
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.transition.MaterialSharedAxis
 import com.ortiz.touchview.TouchImageView
 
@@ -55,8 +59,8 @@ class ViewImagesFragment : Fragment() {
                 if (state == SCROLL_STATE_IDLE) {
                     val recyclerView = pager.children.elementAt(0) as? RecyclerView
                     recyclerView?.children?.forEach { view ->
-                        val linearLayout = view as? LinearLayout
-                        val touchImageView = linearLayout?.getChildAt(0) as? TouchImageView
+                        val frameLayout = view as? FrameLayout
+                        val touchImageView = frameLayout?.getChildAt(1) as? TouchImageView
                         touchImageView?.resetZoom()
                     }
                 }
@@ -98,7 +102,7 @@ class ImageViewAdapter :
                 true
             }
         }
-
+        val progressBar: ProgressBar = itemView.findViewById(R.id.progress_bar)
     }
 
     val list: MutableList<String> = mutableListOf()
@@ -114,7 +118,12 @@ class ImageViewAdapter :
         val context = holder.itemView.context
         val url = list[position]
         val imageView = holder.image
-        Glide.with(context).load(url).into(imageView)
+        Glide.with(context).load(url)
+            .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) // KEEP because Glide for some reason cannot determine the size of this View
+            .dontTransform()
+            .addListener(HideProgressBar(holder.progressBar))
+            .placeholder(null)
+            .into(imageView)
     }
 
     override fun getItemCount(): Int {

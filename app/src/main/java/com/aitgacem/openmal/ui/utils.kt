@@ -1,6 +1,7 @@
 package com.aitgacem.openmal.ui
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
@@ -11,6 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.ui.components.HorizontalListAdapter
 import com.aitgacem.openmal.ui.fragments.details.DetailFragmentDirections
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.datepicker.MaterialDatePicker
 import openmal.domain.ContentRating
 import openmal.domain.Season
@@ -119,4 +124,27 @@ fun getContentRatingColor(context: Context, contentRating: ContentRating): Int {
             }
         }
     )
+}
+
+class HideProgressBar(private val targetView: View): RequestListener<Drawable>{
+    override fun onLoadFailed(
+        e: GlideException?,
+        model: Any?,
+        target: Target<Drawable>,
+        isFirstResource: Boolean
+    ): Boolean {
+        return false
+    }
+
+    override fun onResourceReady(
+        resource: Drawable,
+        model: Any,
+        target: Target<Drawable>?,
+        dataSource: DataSource,
+        isFirstResource: Boolean
+    ): Boolean {
+        targetView.visibility = View.GONE
+        return false
+    }
+
 }

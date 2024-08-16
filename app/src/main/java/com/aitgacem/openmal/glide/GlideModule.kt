@@ -21,7 +21,7 @@ class GlideModule : AppGlideModule() {
             .placeholder(R.drawable.border)
         builder.setDefaultRequestOptions(requestOptions)
             .setDefaultTransitionOptions(
-                Drawable::class.java, DrawableTransitionOptions.withCrossFade(800)
+                Drawable::class.java, DrawableTransitionOptions.withCrossFade(200)
             )
     }
 }
