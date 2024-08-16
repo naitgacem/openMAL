@@ -50,6 +50,7 @@ import com.aitgacem.openmal.ui.fragments.login.LoginViewModel
 import com.aitgacem.openmal.ui.getContentRatingColor
 import com.aitgacem.openmal.ui.getScoreColor
 import com.aitgacem.openmal.ui.gotoWorkDetail
+import com.aitgacem.openmal.ui.hideViews
 import com.aitgacem.openmal.ui.isColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -63,7 +64,6 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import openmal.domain.Anime
-import openmal.domain.Character
 import openmal.domain.ContentRating
 import openmal.domain.ListStatus
 import openmal.domain.Manga
@@ -351,9 +351,7 @@ class DetailFragment : Fragment() {
                 binding.charactersRv.show()
                 characterAdapter.submitList(result.data)
             } else {
-                binding.charactersRv.hide()
-                binding.charactersDivider.hide()
-                binding.charactersTitleTextview.hide()
+                hideViews(binding.charactersRv, binding.charactersDivider, binding.charactersTitleTextview)
             }
         }
 
@@ -492,14 +490,7 @@ class DetailFragment : Fragment() {
         // Hide unused sections
         binding.animeStartSeason.hide()
         with(binding) {
-            animeStudios.hide()
-            animeStudiosTitle.hide()
-            animeSource.hide()
-            animeSourceTitle.hide()
-            animeBroadcastTxt.hide()
-            animeBroadcastTitle.hide()
-            contentRatingSect.hide()
-            contentRating.hide()
+            hideViews(animeStudios, animeStudiosTitle, animeSource, animeSourceTitle, animeBroadcastTxt, animeBroadcastTitle, contentRating, contentRatingSect)
         }
     }
 

@@ -148,3 +148,9 @@ class HideProgressBar(private val targetView: View): RequestListener<Drawable>{
     }
 
 }
+
+fun hideViews(vararg views: View){
+    for(view in views){
+        view.visibility = View.GONE
+    }
+}
