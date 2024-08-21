@@ -15,13 +15,10 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,22 +41,9 @@ import openmal.domain.NetworkResult
 import openmal.domain.Work
 
 @AndroidEntryPoint
-class ProfileFragmentContent() : Fragment() {
-    constructor (mediaType: MediaType) : this() {
-        this.mediaType = mediaType
-    }
-
-    // This variable [mediaType] is a temporary to instantiate the viewModel
-    // IGNORE the default value, it's NOT used. This is just to prevent crashes
-    // SHOULD NOT BE USED AFTER THE VIEWMODEL IS CREATED!
-    private var mediaType: MediaType = MediaType.ANIME
-
+class ProfileFragmentContent : Fragment() {
     private lateinit var binding: FragmentProfileContentBinding
-    private val viewmodel: ProfileViewModel by viewModels(extrasProducer = {
-        MutableCreationExtras(defaultViewModelCreationExtras).apply {
-            set(DEFAULT_ARGS_KEY, bundleOf("type" to mediaType))
-        }
-    })
+    private val viewmodel: ProfileViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -69,7 +53,6 @@ class ProfileFragmentContent() : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("TAG", "onViewCreated: $this ")
         super.onViewCreated(view, savedInstanceState)
         viewmodel.isRefreshing.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
@@ -122,7 +105,10 @@ class ProfileFragmentContent() : Fragment() {
         }
 
         val onFilterButtonClicked = { _: View ->
-            val modalBottomSheet = SortingBottomSheet(viewmodel.mediaType)
+            val modalBottomSheet = SortingBottomSheet()
+            modalBottomSheet.arguments = Bundle().apply {
+                putSerializable("media_type", viewmodel.mediaType)
+            }
             modalBottomSheet.show(childFragmentManager, SortingBottomSheet.TAG)
         }
         val headerAdapter = ProfileHeaderAdapter(

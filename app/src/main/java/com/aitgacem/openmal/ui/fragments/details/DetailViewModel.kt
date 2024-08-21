@@ -26,8 +26,8 @@ class DetailViewModel @Inject constructor(
     prefs: UserPreferencesRepository,
 ) : ViewModel() {
 
-    val id = savedStateHandle.get<Int>("id")!!
-    private val workType = savedStateHandle.get<MediaType>("type")
+    val id = savedStateHandle.get<Int>("id") ?: throw IllegalStateException("Missing ID")
+    private val workType = savedStateHandle.get<MediaType>("media_type") ?: throw IllegalStateException("Missing Media type")
     val isLogged = liveData {
         val value = prefs.isLoggedInFlow.firstOrNull()
         emit(value)

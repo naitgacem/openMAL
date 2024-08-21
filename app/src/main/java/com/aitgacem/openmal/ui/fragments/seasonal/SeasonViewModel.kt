@@ -19,7 +19,7 @@ class SeasonViewModel @Inject constructor(
     private val animeRepository: AnimeRepository,
 ): ViewModel() {
 
-    private val position: Pair<Season, Int>? = savedStateHandle["position"]
+    private val season: Pair<Season, Int> = savedStateHandle["season"] ?: throw IllegalStateException("Missing season")
 
     private var _list = MutableLiveData<NetworkResult<List<Work>>>()
     val list: LiveData<NetworkResult<List<Work>>> = _list
@@ -29,8 +29,8 @@ class SeasonViewModel @Inject constructor(
     }
     fun refresh(){
         viewModelScope.launch {
-            position?.let {
-                val result = animeRepository.getSeasonAnime(position.second, position.first.name.lowercase())
+            season?.let {
+                val result = animeRepository.getSeasonAnime(season.second, season.first.name.lowercase())
                 _list.postValue(result)
             }
         }

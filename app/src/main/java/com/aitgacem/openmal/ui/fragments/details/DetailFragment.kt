@@ -25,16 +25,13 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.os.bundleOf
 import androidx.core.text.color
 import androidx.core.view.ViewCompat
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -78,20 +75,8 @@ class DetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
     private val args: DetailFragmentArgs by navArgs()
 
-    private val viewModel: DetailViewModel by viewModels(extrasProducer = {
-        MutableCreationExtras(defaultViewModelCreationExtras).apply {
-            set(DEFAULT_ARGS_KEY, bundleOf("id" to args.id, "type" to args.mediaType))
-        }
-    })
-    private val editViewModel: EditListViewModel by viewModels(extrasProducer = {
-        MutableCreationExtras(defaultViewModelCreationExtras).apply {
-            set(
-                DEFAULT_ARGS_KEY, bundleOf(
-                    "id" to args.id, "type" to args.mediaType
-                )
-            )
-        }
-    })
+    private val viewModel: DetailViewModel by viewModels()
+    private val editViewModel: EditListViewModel by viewModels()
 
     private val loginViewModel: LoginViewModel by hiltNavGraphViewModels(R.id.main_nav)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -340,7 +325,10 @@ class DetailFragment : Fragment() {
         }
         // characters of the work
         val characterAdapter = CharacterListAdapter { id ->
-            val modal = CharacterDetailsBottomSheet(id)
+            val modal = CharacterDetailsBottomSheet()
+            modal.arguments = Bundle().apply {
+                putInt("id", id)
+            }
             modal.show(childFragmentManager, CharacterDetailsBottomSheet.TAG)
         }
         binding.charactersRv.layoutManager =

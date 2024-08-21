@@ -9,15 +9,12 @@ import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.aitgacem.openmal.R
@@ -42,15 +39,7 @@ import java.util.TimeZone
 class EditListFragment : Fragment() {
     private val map = mutableMapOf<ListStatus, Int>()
     private lateinit var binding: FragmentEditWorkBinding
-    private val viewModel: EditListViewModel by viewModels(extrasProducer = {
-        MutableCreationExtras(defaultViewModelCreationExtras).apply {
-            set(
-                DEFAULT_ARGS_KEY, bundleOf(
-                    "id" to args.id, "type" to args.mediaType
-                )
-            )
-        }
-    })
+    private val viewModel: EditListViewModel by viewModels()
     private val args: EditListFragmentArgs by navArgs()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

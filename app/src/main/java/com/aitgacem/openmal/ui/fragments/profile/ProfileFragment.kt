@@ -26,17 +26,25 @@ class ProfileFragment : Fragment() {
     private val loginViewModel: LoginViewModel by hiltNavGraphViewModels(R.id.main_nav)
     private lateinit var tabbedLayoutAdapter: TabbedLayoutAdapter
 
-    class TabbedLayoutAdapter(fragment: Fragment, private val isLoggedIn: Boolean) : FragmentStateAdapter(fragment) {
+    class TabbedLayoutAdapter(fragment: Fragment, private val isLoggedIn: Boolean) :
+        FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
-            if(!isLoggedIn){
+            if (!isLoggedIn) {
                 return LoginPromptFragment()
             }
-            return when (position) {
-                0 -> ProfileFragmentContent(MediaType.ANIME)
-                else -> ProfileFragmentContent(MediaType.MANGA)
+            val fragment = ProfileFragmentContent()
+            fragment.arguments = Bundle().apply {
+                putSerializable(
+                    "media_type",
+                    when (position) {
+                        0 -> MediaType.ANIME
+                        else -> MediaType.MANGA
+                    }
+                )
             }
+            return fragment
         }
     }
 

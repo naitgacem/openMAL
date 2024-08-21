@@ -5,10 +5,7 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.DEFAULT_ARGS_KEY
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import com.aitgacem.openmal.R
 import com.aitgacem.openmal.databinding.CharacterDetailsBottomsheetContentBinding
 import com.bumptech.glide.Glide
@@ -18,21 +15,13 @@ import openmal.domain.Gender
 import openmal.domain.NetworkResult
 
 @AndroidEntryPoint
-class CharacterDetailsBottomSheet() : BottomSheetDialogFragment() {
+class CharacterDetailsBottomSheet : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "CharacterDetailsBottomSheet"
     }
-    constructor(id: Int) : this() {
-        this.id = id
-    }
 
-    private var id: Int = 0
     private lateinit var binding: CharacterDetailsBottomsheetContentBinding
-    val viewModel by viewModels<CharacterDetailViewModel>(extrasProducer = {
-        MutableCreationExtras(defaultViewModelCreationExtras).apply {
-            set(DEFAULT_ARGS_KEY, bundleOf("id" to id))
-        }
-    })
+    val viewModel: CharacterDetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

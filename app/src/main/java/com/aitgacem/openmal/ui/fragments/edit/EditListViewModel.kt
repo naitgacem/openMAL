@@ -25,8 +25,8 @@ class EditListViewModel @Inject constructor(
     mangaRepository: MangaRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    val id: Int = savedStateHandle["id"] ?: 1
-    private val type: MediaType = savedStateHandle["type"] ?: MediaType.ANIME
+    val id: Int = savedStateHandle["id"] ?: throw IllegalStateException("Missing ID")
+    private val type: MediaType = savedStateHandle["media_type"] ?: throw IllegalStateException("Missing Media type")
     private var status = ListStatus.NON_EXISTENT
     private var progressCount: Int? = null
     private var score: Int? = null

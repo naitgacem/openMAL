@@ -37,7 +37,11 @@ class SeasonalFragment : Fragment() {
         override fun getItemCount(): Int = NUMBER_SEASONS
 
         override fun createFragment(position: Int): Fragment {
-            return SeasonContent(generatePairFromIndex(position))
+            val fragment = SeasonContent()
+            fragment.arguments = Bundle().apply {
+                putSerializable("season", generatePairFromIndex(position))
+            }
+            return fragment
         }
     }
 

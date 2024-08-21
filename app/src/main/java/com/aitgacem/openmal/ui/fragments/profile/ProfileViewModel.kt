@@ -22,10 +22,11 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     prefs: UserPreferencesRepository,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val mediaType =
-        savedStateHandle.get<MediaType>("type") ?: throw IllegalStateException("Type not found")
+        savedStateHandle.get<MediaType>("media_type")
+            ?: throw IllegalStateException("Missing Media type")
 
     private var _workList = MutableLiveData<NetworkResult<List<Work>>>()
     val workList: LiveData<NetworkResult<List<Work>>> = _workList

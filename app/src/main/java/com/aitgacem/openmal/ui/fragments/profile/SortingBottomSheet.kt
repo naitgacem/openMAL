@@ -5,29 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.DEFAULT_ARGS_KEY
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import com.aitgacem.openmal.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import openmal.domain.MediaType
 import openmal.domain.SortType
 
 
 @AndroidEntryPoint
-class SortingBottomSheet() : BottomSheetDialogFragment() {
-    constructor(mediaType: MediaType) : this() {
-        this.mediaType = mediaType
-    }
-
-    private var mediaType: MediaType = MediaType.ANIME
-    val viewModel: ProfileViewModel by viewModels(ownerProducer = {requireParentFragment()}, extrasProducer = {
-        MutableCreationExtras(defaultViewModelCreationExtras).apply {
-            set(DEFAULT_ARGS_KEY, bundleOf("type" to mediaType))
-        }
-    })
+class SortingBottomSheet : BottomSheetDialogFragment() {
+    val viewModel: ProfileViewModel by viewModels(ownerProducer = {requireParentFragment()})
 
     override fun onCreateView(
         inflater: LayoutInflater,
